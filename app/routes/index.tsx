@@ -11,9 +11,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { queryClient } = Route.useRouteContext();
-  const { user } = Route.useLoaderData();
   const router = useRouter();
+  const { user } = Route.useLoaderData();
+  const { queryClient } = Route.useRouteContext();
 
   return (
     <div className="flex flex-col gap-4 p-6">
@@ -60,15 +60,6 @@ function Home() {
       )}
 
       <ThemeToggle />
-
-      <a
-        className="text-muted-foreground underline hover:text-foreground"
-        href="https://github.com/dotnize/tanstarter"
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        dotnize/tanstarter
-      </a>
     </div>
   );
 }

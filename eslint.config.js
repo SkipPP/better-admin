@@ -1,10 +1,13 @@
-import react from "@eslint-react/eslint-plugin";
 import js from "@eslint/js";
+import react from "@eslint-react/eslint-plugin";
+
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginRouter from "@tanstack/eslint-plugin-router";
-import eslintConfigPrettier from "eslint-config-prettier";
-import reactCompiler from "eslint-plugin-react-compiler";
+
 import reactHooks from "eslint-plugin-react-hooks";
+import reactCompiler from "eslint-plugin-react-compiler";
+import eslintConfigPrettier from "eslint-config-prettier";
+
 import globals from "globals";
 import tseslint from "typescript-eslint";
 

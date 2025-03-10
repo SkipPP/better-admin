@@ -1,13 +1,13 @@
-import { queryOptions, type QueryClient } from "@tanstack/react-query";
-import {
-  createRootRouteWithContext,
-  HeadContent,
-  Outlet,
-  ScriptOnce,
-  Scripts,
-} from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
+import { queryOptions, type QueryClient } from "@tanstack/react-query";
+import {
+  Outlet,
+  Scripts,
+  ScriptOnce,
+  HeadContent,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -68,6 +68,7 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
+      
       <body>
         <ScriptOnce>
           {`document.documentElement.classList.toggle(
