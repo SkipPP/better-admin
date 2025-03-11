@@ -15,6 +15,8 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { auth } from "~/lib/server/auth";
 import appCss from "~/lib/styles/app.css?url";
 
+import { Toaster } from "sonner";
+
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
   const { headers } = getWebRequest()!;
   const session = await auth.api.getSession({ headers });
@@ -33,6 +35,7 @@ export const Route = createRootRouteWithContext<{
 }>()({
   beforeLoad: async ({ context }) => {
     const user = await context.queryClient.fetchQuery(userQuery);
+
     return { user };
   },
   head: () => ({
@@ -68,7 +71,7 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      
+
       <body>
         <ScriptOnce>
           {`document.documentElement.classList.toggle(
@@ -77,10 +80,12 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
             )`}
         </ScriptOnce>
 
+        <Toaster richColors />
+
         {children}
 
-        <ReactQueryDevtools buttonPosition="bottom-left" />
-        <TanStackRouterDevtools position="bottom-right" />
+        {/* <ReactQueryDevtools buttonPosition="bottom-left" />
+        <TanStackRouterDevtools position="bottom-right" /> */}
 
         <Scripts />
       </body>

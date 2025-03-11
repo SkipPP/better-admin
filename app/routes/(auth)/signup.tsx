@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { SignInForm } from "~/lib/components/SignInForm";
+import { SignUpForm } from "~/lib/components/SignUpForm";
 
 const REDIRECT_URL = "/dashboard";
 
-export const Route = createFileRoute("/(auth)/signin")({
-  component: SignInForm,
+export const Route = createFileRoute("/(auth)/signup")({
+  component: SignUpForm,
   beforeLoad: async ({ context }) => {
     if (context.user) {
       throw redirect({

@@ -12,15 +12,24 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/dashboard/route'
+import { Route as authRouteImport } from './routes/(auth)/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
+import { Route as authSignupImport } from './routes/(auth)/signup'
 import { Route as authSigninImport } from './routes/(auth)/signin'
+import { Route as DashboardUsersRouteImport } from './routes/dashboard/users/route'
+import { Route as DashboardUsersIndexImport } from './routes/dashboard/users/index'
 
 // Create/Update Routes
 
 const DashboardRouteRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const authRouteRoute = authRouteImport.update({
+  id: '/(auth)',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -36,10 +45,28 @@ const DashboardIndexRoute = DashboardIndexImport.update({
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
+const authSignupRoute = authSignupImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => authRouteRoute,
+} as any)
+
 const authSigninRoute = authSigninImport.update({
-  id: '/(auth)/signin',
+  id: '/signin',
   path: '/signin',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => authRouteRoute,
+} as any)
+
+const DashboardUsersRouteRoute = DashboardUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardUsersIndexRoute = DashboardUsersIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardUsersRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -53,6 +80,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/(auth)': {
+      id: '/(auth)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof authRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -60,12 +94,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/users': {
+      id: '/dashboard/users'
+      path: '/users'
+      fullPath: '/dashboard/users'
+      preLoaderRoute: typeof DashboardUsersRouteImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/(auth)/signin': {
       id: '/(auth)/signin'
       path: '/signin'
       fullPath: '/signin'
       preLoaderRoute: typeof authSigninImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof authRouteImport
+    }
+    '/(auth)/signup': {
+      id: '/(auth)/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof authSignupImport
+      parentRoute: typeof authRouteImport
     }
     '/dashboard/': {
       id: '/dashboard/'
@@ -74,16 +122,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/dashboard/users/': {
+      id: '/dashboard/users/'
+      path: '/'
+      fullPath: '/dashboard/users/'
+      preLoaderRoute: typeof DashboardUsersIndexImport
+      parentRoute: typeof DashboardUsersRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface authRouteRouteChildren {
+  authSigninRoute: typeof authSigninRoute
+  authSignupRoute: typeof authSignupRoute
+}
+
+const authRouteRouteChildren: authRouteRouteChildren = {
+  authSigninRoute: authSigninRoute,
+  authSignupRoute: authSignupRoute,
+}
+
+const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
+  authRouteRouteChildren,
+)
+
+interface DashboardUsersRouteRouteChildren {
+  DashboardUsersIndexRoute: typeof DashboardUsersIndexRoute
+}
+
+const DashboardUsersRouteRouteChildren: DashboardUsersRouteRouteChildren = {
+  DashboardUsersIndexRoute: DashboardUsersIndexRoute,
+}
+
+const DashboardUsersRouteRouteWithChildren =
+  DashboardUsersRouteRoute._addFileChildren(DashboardUsersRouteRouteChildren)
+
 interface DashboardRouteRouteChildren {
+  DashboardUsersRouteRoute: typeof DashboardUsersRouteRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardUsersRouteRoute: DashboardUsersRouteRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -92,45 +174,70 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof authRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/users': typeof DashboardUsersRouteRouteWithChildren
   '/signin': typeof authSigninRoute
+  '/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/users/': typeof DashboardUsersIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof authRouteRouteWithChildren
   '/signin': typeof authSigninRoute
+  '/signup': typeof authSignupRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/users': typeof DashboardUsersIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/(auth)': typeof authRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/users': typeof DashboardUsersRouteRouteWithChildren
   '/(auth)/signin': typeof authSigninRoute
+  '/(auth)/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/users/': typeof DashboardUsersIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/signin' | '/dashboard/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/dashboard/users'
+    | '/signin'
+    | '/signup'
+    | '/dashboard/'
+    | '/dashboard/users/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/signin' | '/dashboard'
-  id: '__root__' | '/' | '/dashboard' | '/(auth)/signin' | '/dashboard/'
+  to: '/' | '/signin' | '/signup' | '/dashboard' | '/dashboard/users'
+  id:
+    | '__root__'
+    | '/'
+    | '/(auth)'
+    | '/dashboard'
+    | '/dashboard/users'
+    | '/(auth)/signin'
+    | '/(auth)/signup'
+    | '/dashboard/'
+    | '/dashboard/users/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  authRouteRoute: typeof authRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-  authSigninRoute: typeof authSigninRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  authRouteRoute: authRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
-  authSigninRoute: authSigninRoute,
 }
 
 export const routeTree = rootRoute
@@ -144,25 +251,49 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/dashboard",
-        "/(auth)/signin"
+        "/(auth)",
+        "/dashboard"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/(auth)": {
+      "filePath": "(auth)/route.tsx",
+      "children": [
+        "/(auth)/signin",
+        "/(auth)/signup"
+      ]
+    },
     "/dashboard": {
       "filePath": "dashboard/route.tsx",
       "children": [
+        "/dashboard/users",
         "/dashboard/"
       ]
     },
+    "/dashboard/users": {
+      "filePath": "dashboard/users/route.tsx",
+      "parent": "/dashboard",
+      "children": [
+        "/dashboard/users/"
+      ]
+    },
     "/(auth)/signin": {
-      "filePath": "(auth)/signin.tsx"
+      "filePath": "(auth)/signin.tsx",
+      "parent": "/(auth)"
+    },
+    "/(auth)/signup": {
+      "filePath": "(auth)/signup.tsx",
+      "parent": "/(auth)"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx",
       "parent": "/dashboard"
+    },
+    "/dashboard/users/": {
+      "filePath": "dashboard/users/index.tsx",
+      "parent": "/dashboard/users"
     }
   }
 }
