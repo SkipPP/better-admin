@@ -1,4 +1,5 @@
-import { z } from "zod";
+"use no memo";
+
 import { Row } from "@tanstack/react-table";
 
 import { MoreHorizontal } from "lucide-react";
@@ -18,13 +19,7 @@ import {
   DropdownMenuSubTrigger,
 } from "~/lib/components/ui/dropdown-menu";
 
-const taskSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  status: z.string(),
-  label: z.string(),
-  priority: z.string(),
-});
+import { taskSchema } from "~/lib/components/userColumns";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;

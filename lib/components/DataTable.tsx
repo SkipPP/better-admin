@@ -1,3 +1,5 @@
+"use no memo";
+
 import * as React from "react";
 
 import {
@@ -36,6 +38,9 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  // Memoize the columns to prevent unnecessary re-renders
+  const memoizedColumns = React.useMemo(() => columns, [columns]);
+
   const [rowSelection, setRowSelection] = React.useState({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -43,7 +48,7 @@ export function DataTable<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: memoizedColumns,
     state: {
       sorting,
       columnVisibility,
@@ -61,6 +66,8 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    // Add debugTable to help identify issues
+    debugTable: true,
   });
 
   return (

@@ -1,3 +1,5 @@
+"use no memo";
+
 import * as React from "react";
 
 import { Column } from "@tanstack/react-table";
@@ -48,7 +50,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 
           {selectedValues?.size > 0 && (
             <>
-              <Separator orientation="vertical" className="mx-2 h-4" />
+              <Separator orientation="vertical" className="mx-2 h-4!" />
 
               <Badge
                 variant="secondary"
@@ -101,7 +103,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                       } else {
                         selectedValues.add(option.value);
                       }
+
                       const filterValues = Array.from(selectedValues);
+
                       column?.setFilterValue(
                         filterValues.length ? filterValues : undefined,
                       );

@@ -1,4 +1,4 @@
-"use client";
+"use no memo";
 
 import { Table } from "@tanstack/react-table";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
