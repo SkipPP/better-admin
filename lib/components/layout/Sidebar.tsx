@@ -2,10 +2,10 @@ import * as React from "react";
 
 import { Link, useRouter } from "@tanstack/react-router";
 
-import { User } from "better-auth";
+import { User } from "~/lib/server/auth";
 import authClient from "~/lib/utils/auth-client";
 
-import { Command, User as UserIcon, UserPlus, Ban } from "lucide-react";
+import { Command, User as UserIcon, UserPlus } from "lucide-react";
 
 import { NavUser } from "~/lib/components/layout/NavUser";
 import { NavList } from "~/lib/components/layout/NavList";
@@ -44,7 +44,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const router = useRouter();
 
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props}>
+    <Sidebar className="z-50" variant="inset" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

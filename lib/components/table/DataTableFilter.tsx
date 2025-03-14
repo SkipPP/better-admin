@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { Column } from "@tanstack/react-table";
 
-import { Check, PlusCircle } from "lucide-react";
+import { Check, Settings2 } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 
@@ -44,7 +44,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="border-dashed">
-          <PlusCircle />
+          <Settings2 />
 
           {title}
 

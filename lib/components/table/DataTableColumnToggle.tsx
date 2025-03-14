@@ -3,7 +3,7 @@
 import { Table } from "@tanstack/react-table";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 
-import { Settings2 } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import { Button } from "~/lib/components/ui/button";
 import {
@@ -23,7 +23,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="ml-auto hidden lg:flex">
-          <Settings2 />
+          <Eye />
           Afficher
         </Button>
       </DropdownMenuTrigger>

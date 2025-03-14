@@ -1,7 +1,9 @@
 import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
-import ThemeToggle from "~/lib/components/ThemeToggle";
-import { Button } from "~/lib/components/ui/button";
+
 import authClient from "~/lib/utils/auth-client";
+
+import { Button } from "~/lib/components/ui/button";
+import ThemeToggle from "~/lib/components/layout/ThemeToggle";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -20,7 +22,7 @@ function Home() {
       <h1 className="text-4xl font-bold">TanStarter</h1>
       <div className="flex items-center gap-2">
         This is an unprotected page:
-        <pre className="rounded-md border bg-card p-1 text-card-foreground">
+        <pre className="bg-card text-card-foreground rounded-md border p-1">
           routes/index.tsx
         </pre>
       </div>

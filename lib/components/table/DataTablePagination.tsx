@@ -23,7 +23,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   const navigate = useNavigate();
 
   return (
-    <div className="mt-4 flex items-center justify-between px-2">
+    <div className="mt-4 flex items-center justify-between">
       <div className="text-muted-foreground flex-1 text-sm">
         {table.getFilteredSelectedRowModel().rows.length} sur{" "}
         {table.getFilteredRowModel().rows.length} ligne(s) sélectionnée(s).

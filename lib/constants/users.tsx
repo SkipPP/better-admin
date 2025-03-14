@@ -1,24 +1,30 @@
-import { User } from "better-auth";
 import { ColumnDef } from "@tanstack/react-table";
+import { UserWithRole } from "better-auth/plugins/admin";
 
-import { Circle, HelpCircle, UserCheck, User as UserIcon } from "lucide-react";
+import {
+  Circle,
+  CircleAlert,
+  ShieldAlert,
+  HelpCircle,
+  UserCheck,
+  User as UserIcon,
+} from "lucide-react";
 
 import { DataTableRowActions } from "~/lib/components/table/DataTableRowActions";
 import { Avatar, AvatarFallback, AvatarImage } from "~/lib/components/ui/avatar";
 import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
 
 export const columns: (
-  onEdit: (user: User) => void,
-  onDelete: (user: User) => void,
-) => ColumnDef<User>[] = (onEdit, onDelete) => [
+  onEdit: (user: UserWithRole) => void,
+  onDelete: (user: UserWithRole) => void,
+) => ColumnDef<UserWithRole>[] = (onEdit, onDelete) => [
   {
     accessorKey: "image",
+    accessorFn: (row) => row.image,
     meta: {
       label: "Avatar",
     },
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Avatar" className="px-2.5" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} className="px-2.5" />,
     cell: ({ row }) => {
       return (
         <Avatar className="h-8 w-8 rounded-lg">
@@ -36,34 +42,35 @@ export const columns: (
   },
   {
     accessorKey: "name",
+    accessorFn: (row) => row.name,
     meta: {
       label: "Nom",
     },
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
       return <span>{row.getValue("name")}</span>;
     },
   },
   {
     accessorKey: "email",
+    accessorFn: (row) => row.email,
     meta: {
       label: "Email",
     },
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
       return <span>{row.getValue("email")}</span>;
     },
   },
   {
-    accessorKey: "email_verified",
+    accessorKey: "emailVerified",
+    accessorFn: (row) => row.emailVerified,
     meta: {
       label: "Email vérifié",
     },
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email vérifié" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} className="px-2.5" />,
     cell: ({ row }) => {
-      return <span>{row.getValue("email_verified") ? "Oui" : "Non"}</span>;
+      return <span>{row.getValue("emailVerified") ? "Oui" : "Non"}</span>;
     },
     enableSorting: false,
     enableColumnFilter: false,
@@ -71,10 +78,11 @@ export const columns: (
   },
   {
     accessorKey: "role",
+    accessorFn: (row) => row.role,
     meta: {
       label: "Rôle",
     },
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Role" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
       const role = [
         {
@@ -101,12 +109,11 @@ export const columns: (
   },
   {
     accessorKey: "createdAt",
+    accessorFn: (row) => row.createdAt,
     meta: {
       label: "Date de création",
     },
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date de création" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
       const createdAt = new Date(row.getValue("createdAt"));
       const formattedCreatedAt = createdAt.toLocaleDateString("fr-FR");
@@ -115,13 +122,12 @@ export const columns: (
     },
   },
   {
-    accessorKey: "ban_reason",
+    accessorKey: "banReason",
+    accessorFn: (row) => row.banReason,
     meta: {
       label: "Motif de bannissement",
     },
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Motif de bannissement" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} className="px-2.5" />,
     cell: ({ row }) => {
       const banReason = [
         {
@@ -139,7 +145,7 @@ export const columns: (
           label: "Other",
           icon: Circle,
         },
-      ].find((banReason) => banReason.value === row.getValue("ban_reason"));
+      ].find((banReason) => banReason.value === row.getValue("banReason"));
 
       if (!banReason) {
         return null;
@@ -154,11 +160,46 @@ export const columns: (
   },
   {
     id: "actions",
+    accessorFn: (row) => row.id,
+    meta: {
+      label: "Actions",
+    },
+    header: ({ column }) => <DataTableColumnHeader column={column} className="px-2.5" />,
     cell: ({ row }) => (
       <DataTableRowActions
         onEdit={() => onEdit(row.original)}
         onDelete={() => onDelete(row.original)}
       />
     ),
+    enableSorting: false,
+    enableColumnFilter: false,
+    enableGlobalFilter: false,
+  },
+];
+
+export const filters = [
+  {
+    name: "role",
+    title: "Rôle",
+    options: [
+      {
+        label: "Administrateur",
+        value: "admin",
+        icon: UserCheck,
+      },
+      {
+        label: "Utilisateur",
+        value: "user",
+        icon: UserIcon,
+      },
+    ],
+  },
+  {
+    name: "banReason",
+    title: "Motif de bannissement",
+    options: [
+      { value: "spam", label: "Spam", icon: ShieldAlert },
+      { value: "abuse", label: "Abuse", icon: CircleAlert },
+    ],
   },
 ];

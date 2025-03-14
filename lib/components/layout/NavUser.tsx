@@ -1,4 +1,4 @@
-import { User } from "better-auth";
+import { User } from "~/lib/server/auth";
 
 import {
   Bell,

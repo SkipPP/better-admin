@@ -2,40 +2,13 @@ import { z } from "zod";
 import { queryOptions } from "@tanstack/react-query";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 
+import { UserWithRole } from "better-auth/plugins/admin";
 import { deleteUser, fetchUsers } from "~/lib/server/admin";
 
+import { columns, filters } from "~/lib/constants/users";
 import { DataTable } from "~/lib/components/table/DataTable";
-import { columns } from "../../../../lib/constants/userColumns";
 
-import { CircleAlert, ShieldAlert, User, UserCheck } from "lucide-react";
 import { toast } from "sonner";
-
-const filters = [
-  {
-    name: "role",
-    title: "Rôle",
-    options: [
-      {
-        label: "Administrateur",
-        value: "admin",
-        icon: UserCheck,
-      },
-      {
-        label: "Utilisateur",
-        value: "user",
-        icon: User,
-      },
-    ],
-  },
-  {
-    name: "ban_reason",
-    title: "Motif de bannissement",
-    options: [
-      { value: "spam", label: "Spam", icon: ShieldAlert },
-      { value: "abuse", label: "Abuse", icon: CircleAlert },
-    ],
-  },
-];
 
 function listUsers(limit?: number, currentPage?: number) {
   return queryOptions({
@@ -56,11 +29,11 @@ export const Route = createFileRoute("/dashboard/users/")({
     currentPage: search.currentPage,
   }),
   loader: async ({ context, deps }) => {
-    const users = await context.queryClient.fetchQuery(
+    const { users, total } = await context.queryClient.fetchQuery(
       listUsers(deps.limit, deps.currentPage),
     );
 
-    return users;
+    return { users, total };
   },
 });
 
@@ -69,24 +42,32 @@ function RouteComponent() {
   const navigate = useNavigate();
   const { users } = Route.useLoaderData();
 
+  const handleDeleteUser = (user: UserWithRole) => {
+    deleteUser({ data: { userId: user.id } })
+      .then(() => {
+        toast.success("Utilisateur supprimé avec succès");
+        router.invalidate();
+      })
+      .catch((error) => {
+        toast.error("Une erreur est survenue lors de la suppression de l'utilisateur :", {
+          description: error.message,
+        });
+      });
+  };
+
+  const handleEditUser = (user: UserWithRole) => {
+    navigate({
+      to: "/dashboard/users/$userId/edit",
+      params: { userId: user.id },
+      search: { username: user.name },
+    });
+  };
+
   return (
     <div className="relative">
       <DataTable
         data={users}
-        columns={columns(
-          (user) =>
-            navigate({
-              to: "/dashboard/users/$userId/edit",
-              params: { userId: user.id },
-              search: { username: user.name },
-            }),
-          (user) => {
-            deleteUser({ data: { userId: user.id } });
-
-            toast.success("Utilisateur supprimé avec succès");
-            router.invalidate();
-          },
-        )}
+        columns={columns(handleEditUser, handleDeleteUser)}
         filters={filters}
         onRowClick={(row) =>
           navigate({

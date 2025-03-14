@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { useLocation } from "@tanstack/react-router";
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -19,21 +21,22 @@ import {
 
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from "~/lib/components/ui/table";
 
 import { DataTableToolbar } from "~/lib/components/table/DataTableToolbar";
 import { DataTablePagination } from "~/lib/components/table/DataTablePagination";
-import { useLocation } from "@tanstack/react-router";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  columns: ColumnDef<TData, TValue>[];
+
   onRowClick?: (row: TData) => void;
+
   filters: {
     name: string;
     title: string;

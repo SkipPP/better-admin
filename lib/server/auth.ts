@@ -1,10 +1,11 @@
 import { betterAuth } from "better-auth";
 import { admin } from "better-auth/plugins/admin";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+
 import { db } from "./db";
 
 export const auth = betterAuth({
-  baseURL: process.env.VITE_BASE_URL,
+  baseURL: process.env.BETTER_AUTH_BASE_URL,
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
@@ -32,3 +33,6 @@ export const auth = betterAuth({
   //   enabled: true,
   // },
 });
+
+export type Session = typeof auth.$Infer.Session;
+export type User = Session["user"];

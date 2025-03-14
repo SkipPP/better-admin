@@ -1,5 +1,3 @@
-import { createServerFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
 import { queryOptions, type QueryClient } from "@tanstack/react-query";
 import {
   Outlet,
@@ -12,17 +10,10 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { auth } from "~/lib/server/auth";
-import appCss from "~/lib/styles/app.css?url";
+import { getUser } from "~/lib/server/users";
 
 import { Toaster } from "sonner";
-
-const getUser = createServerFn({ method: "GET" }).handler(async () => {
-  const { headers } = getWebRequest()!;
-  const session = await auth.api.getSession({ headers });
-
-  return session?.user || null;
-});
+import appCss from "~/lib/styles/app.css?url";
 
 const userQuery = queryOptions({
   queryKey: ["user"],
@@ -84,8 +75,8 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
 
         {children}
 
-        {/* <ReactQueryDevtools buttonPosition="bottom-left" />
-        <TanStackRouterDevtools position="bottom-right" /> */}
+        <ReactQueryDevtools buttonPosition="bottom-left" />
+        <TanStackRouterDevtools position="top-left" />
 
         <Scripts />
       </body>
