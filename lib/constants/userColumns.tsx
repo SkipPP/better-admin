@@ -1,78 +1,62 @@
-import { z } from "zod";
-
 import { User } from "better-auth";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Circle, HelpCircle, UserCheck, User as UserIcon, UserPen } from "lucide-react";
+import { Circle, HelpCircle, UserCheck, User as UserIcon } from "lucide-react";
 
-import { Checkbox } from "~/lib/components/ui/checkbox";
+import { DataTableRowActions } from "~/lib/components/table/DataTableRowActions";
+import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
 
-import { DataTableRowActions } from "~/lib/components/DataTableRowActions";
-import { DataTableColumnHeader } from "~/lib/components/DataTableColumnHeader";
-
-export const taskSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  ban_reason: z.string().optional(),
-  role: z.string(),
-  banned: z.boolean().nullable(),
-});
-
-export const columns: ColumnDef<User>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+export const columns: (
+  onEdit: (user: User) => void,
+  onDelete: (user: User) => void,
+) => ColumnDef<User>[] = (onEdit, onDelete) => [
   {
     accessorKey: "name",
+    meta: {
+      label: "Nom",
+    },
     header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
     cell: ({ row }) => {
-      return <span className="truncate font-medium">{row.getValue("name")}</span>;
+      return <span>{row.getValue("name")}</span>;
     },
   },
   {
     accessorKey: "email",
+    meta: {
+      label: "Email",
+    },
     header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
     cell: ({ row }) => {
-      return <span className="truncate font-medium">{row.getValue("email")}</span>;
+      return <span>{row.getValue("email")}</span>;
+    },
+  },
+  {
+    accessorKey: "email_verified",
+    meta: {
+      label: "Email vérifié",
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email vérifié" />
+    ),
+    cell: ({ row }) => {
+      return <span>{row.getValue("email_verified") ? "Oui" : "Non"}</span>;
     },
   },
   {
     accessorKey: "role",
+    meta: {
+      label: "Rôle",
+    },
     header: ({ column }) => <DataTableColumnHeader column={column} title="Role" />,
     cell: ({ row }) => {
       const role = [
         {
-          label: "Super Admin",
-          value: "super_admin",
-          icon: UserPen,
-        },
-        {
-          label: "Administrator",
+          label: "Administrateur",
           value: "admin",
           icon: UserCheck,
         },
         {
-          label: "User",
+          label: "Utilisateur",
           value: "user",
           icon: UserIcon,
         },
@@ -82,14 +66,32 @@ export const columns: ColumnDef<User>[] = [
         return null;
       }
 
-      return <span>{role.label}</span>;
+      return <span className="truncate font-medium">{role.label}</span>;
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
   },
   {
+    accessorKey: "createdAt",
+    meta: {
+      label: "Date de création",
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date de création" />
+    ),
+    cell: ({ row }) => {
+      const createdAt = new Date(row.getValue("createdAt"));
+      const formattedCreatedAt = createdAt.toLocaleDateString("fr-FR");
+
+      return <span>{formattedCreatedAt}</span>;
+    },
+  },
+  {
     accessorKey: "ban_reason",
+    meta: {
+      label: "Motif de bannissement",
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Banned Reason" />
     ),
@@ -124,6 +126,11 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row }) => (
+      <DataTableRowActions
+        onEdit={() => onEdit(row.original)}
+        onDelete={() => onDelete(row.original)}
+      />
+    ),
   },
 ];

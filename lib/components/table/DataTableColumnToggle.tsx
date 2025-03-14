@@ -22,14 +22,14 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
+        <Button variant="outline" className="ml-auto hidden lg:flex">
           <Settings2 />
-          View
+          Afficher
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-[200px]">
+        <DropdownMenuLabel>Afficher les colonnes</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
@@ -46,7 +46,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {column.columnDef.meta?.label}
               </DropdownMenuCheckboxItem>
             );
           })}

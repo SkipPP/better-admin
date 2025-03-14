@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useParams } from "@tanstack/react-router";
 
 import {
   Breadcrumb as BreadcrumbComponent,
@@ -12,8 +12,10 @@ import {
 } from "~/lib/components/ui/breadcrumb";
 
 export const Breadcrumb = () => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
+  const { userId } = useParams({ strict: false });
 
+  const username = search?.username;
   const pathNames = pathname.split("/").filter((path) => path);
 
   return (
@@ -27,19 +29,22 @@ export const Breadcrumb = () => {
             return;
           }
 
+          const displayName =
+            link === userId && username
+              ? String(username).charAt(0).toUpperCase() + String(username).slice(1)
+              : String(link).charAt(0).toUpperCase() + String(link).slice(1);
+
           return last ? (
             <BreadcrumbPage key={link}>
-              <h1 className="text-lg font-extrabold tracking-tight">
-                {String(link).charAt(0).toUpperCase() + String(link).slice(1)}
-              </h1>
+              <h1 className="text-lg font-extrabold tracking-tight">{displayName}</h1>
             </BreadcrumbPage>
           ) : (
             <React.Fragment key={link}>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to={href}>
+                  <Link to={href} search={(prev) => ({ ...prev })}>
                     <h1 className="text-lg font-extrabold tracking-tight">
-                      {String(link).charAt(0).toUpperCase() + String(link).slice(1)}
+                      {displayName}
                     </h1>
                   </Link>
                 </BreadcrumbLink>

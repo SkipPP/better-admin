@@ -26,17 +26,29 @@ import {
   TableRow,
 } from "~/lib/components/ui/table";
 
-import { DataTableToolbar } from "~/lib/components/DataTableToolbar";
-import { DataTablePagination } from "~/lib/components/DataTablePagination";
+import { DataTableToolbar } from "~/lib/components/table/DataTableToolbar";
+import { DataTablePagination } from "~/lib/components/table/DataTablePagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRowClick?: (row: TData) => void;
+  filters: {
+    name: string;
+    title: string;
+    options: {
+      value: string;
+      label: string;
+      icon?: React.ComponentType<{ className?: string }>;
+    }[];
+  }[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  filters,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   // Memoize the columns to prevent unnecessary re-renders
   const memoizedColumns = React.useMemo(() => columns, [columns]);
@@ -66,13 +78,11 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    // Add debugTable to help identify issues
-    debugTable: true,
   });
 
   return (
-    <div className="space-y-4">
-      <DataTableToolbar table={table} />
+    <React.Fragment>
+      <DataTableToolbar table={table} filters={filters} />
 
       <div className="rounded-md border">
         <Table>
@@ -95,7 +105,22 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  data-href={onRowClick && "href"}
+                  className="data-[href]:cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (row.id !== "actions" && onRowClick) {
+                      onRowClick(row.original);
+                    } else if (row.getCanSelect()) {
+                      row.getToggleSelectedHandler();
+                    }
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-5 py-4">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -115,6 +140,6 @@ export function DataTable<TData, TValue>({
       </div>
 
       <DataTablePagination table={table} />
-    </div>
+    </React.Fragment>
   );
 }

@@ -43,7 +43,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-dashed">
+        <Button variant="outline" className="border-dashed">
           <PlusCircle />
 
           {title}
@@ -83,9 +83,9 @@ export function DataTableFacetedFilter<TData, TValue>({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent className="w-[200px] border-dashed p-0" align="start">
         <Command>
-          <CommandInput placeholder={title} />
+          <CommandInput />
 
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
@@ -97,6 +97,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 return (
                   <CommandItem
                     key={option.value}
+                    className="gap-1"
                     onSelect={() => {
                       if (isSelected) {
                         selectedValues.delete(option.value);
@@ -122,17 +123,14 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <Check />
                     </div>
 
+                    <span>
+                      {option.label}{" "}
+                      {facets?.get(option.value) ? `(${facets.get(option.value)})` : null}
+                    </span>
+
                     {option.icon && (
-                      <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
+                      <option.icon className="text-muted-foreground ml-auto h-4 w-4" />
                     )}
-
-                    <span>{option.label}</span>
-
-                    {facets?.get(option.value) ? (
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
-                      </span>
-                    ) : null}
                   </CommandItem>
                 );
               })}
@@ -147,7 +145,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     onSelect={() => column?.setFilterValue(undefined)}
                     className="justify-center text-center"
                   >
-                    Clear filters
+                    Réinitialiser
                   </CommandItem>
                 </CommandGroup>
               </>

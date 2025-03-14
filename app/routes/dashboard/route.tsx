@@ -1,10 +1,10 @@
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 
-import { Breadcrumb } from "~/lib/components/Breadcrumb";
+import { Breadcrumb } from "~/lib/components/layout/Breadcrumb";
 import { AppSidebar } from "~/lib/components/layout/Sidebar";
 
-import ThemeToggle from "~/lib/components/ThemeToggle";
 import { Separator } from "~/lib/components/ui/separator";
+import ThemeToggle from "~/lib/components/layout/ThemeToggle";
 import {
   SidebarInset,
   SidebarProvider,
@@ -14,9 +14,10 @@ import {
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
   beforeLoad: async ({ context }) => {
-    /* if (!context.user) {
+    if (!context.user) {
       throw redirect({ to: "/signin" });
-    } */
+    }
+
     // `context.queryClient` is also available in our loaders
     // https://tanstack.com/start/latest/docs/framework/react/examples/start-basic-react-query
     // https://tanstack.com/router/latest/docs/framework/react/guide/external-data-loading
@@ -34,7 +35,7 @@ function DashboardLayout() {
       <AppSidebar user={user} />
 
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
+        <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 rounded-xl">
           <div className="flex w-full items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
 
