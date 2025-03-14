@@ -28,6 +28,7 @@ import {
 
 import { DataTableToolbar } from "~/lib/components/table/DataTableToolbar";
 import { DataTablePagination } from "~/lib/components/table/DataTablePagination";
+import { useLocation } from "@tanstack/react-router";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,6 +51,8 @@ export function DataTable<TData, TValue>({
   filters,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
+  const location = useLocation();
+
   // Memoize the columns to prevent unnecessary re-renders
   const memoizedColumns = React.useMemo(() => columns, [columns]);
 
@@ -57,6 +60,10 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [pagination, setPagination] = React.useState({
+    pageIndex: location.search.currentPage ? location.search.currentPage : 0,
+    pageSize: location.search.limit ? location.search.limit : 10,
+  });
 
   const table = useReactTable({
     data,
@@ -66,11 +73,13 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      pagination,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -131,7 +140,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  Aucun résultat.
                 </TableCell>
               </TableRow>
             )}

@@ -34,11 +34,6 @@ const data = [
     url: "/dashboard/users/add",
     icon: UserPlus,
   },
-  {
-    name: "Modérer un utilisateur",
-    url: "/dashboard/users/moderate",
-    icon: Ban,
-  },
 ];
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {

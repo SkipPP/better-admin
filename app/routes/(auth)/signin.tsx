@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { SignInForm } from "~/lib/components/SignInForm";
+import { SignInForm } from "~/lib/components/auth/SignInForm";
 
 const REDIRECT_URL = "/dashboard";
 

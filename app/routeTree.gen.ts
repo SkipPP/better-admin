@@ -19,10 +19,12 @@ import { Route as authSignupImport } from './routes/(auth)/signup'
 import { Route as authSigninImport } from './routes/(auth)/signin'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard/users/route'
 import { Route as DashboardUsersIndexImport } from './routes/dashboard/users/index'
+import { Route as DashboardUsersAddRouteImport } from './routes/dashboard/users/add/route'
 import { Route as DashboardUsersUserIdRouteImport } from './routes/dashboard/users/$userId/route'
+import { Route as DashboardUsersAddIndexImport } from './routes/dashboard/users/add/index'
 import { Route as DashboardUsersUserIdIndexImport } from './routes/dashboard/users/$userId/index'
-import { Route as DashboardUsersUserIdAddRouteImport } from './routes/dashboard/users/$userId/add/route'
-import { Route as DashboardUsersUserIdAddIndexImport } from './routes/dashboard/users/$userId/add/index'
+import { Route as DashboardUsersUserIdEditRouteImport } from './routes/dashboard/users/$userId/edit/route'
+import { Route as DashboardUsersUserIdEditIndexImport } from './routes/dashboard/users/$userId/edit/index'
 
 // Create/Update Routes
 
@@ -73,10 +75,22 @@ const DashboardUsersIndexRoute = DashboardUsersIndexImport.update({
   getParentRoute: () => DashboardUsersRouteRoute,
 } as any)
 
+const DashboardUsersAddRouteRoute = DashboardUsersAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => DashboardUsersRouteRoute,
+} as any)
+
 const DashboardUsersUserIdRouteRoute = DashboardUsersUserIdRouteImport.update({
   id: '/$userId',
   path: '/$userId',
   getParentRoute: () => DashboardUsersRouteRoute,
+} as any)
+
+const DashboardUsersAddIndexRoute = DashboardUsersAddIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardUsersAddRouteRoute,
 } as any)
 
 const DashboardUsersUserIdIndexRoute = DashboardUsersUserIdIndexImport.update({
@@ -85,18 +99,18 @@ const DashboardUsersUserIdIndexRoute = DashboardUsersUserIdIndexImport.update({
   getParentRoute: () => DashboardUsersUserIdRouteRoute,
 } as any)
 
-const DashboardUsersUserIdAddRouteRoute =
-  DashboardUsersUserIdAddRouteImport.update({
-    id: '/add',
-    path: '/add',
+const DashboardUsersUserIdEditRouteRoute =
+  DashboardUsersUserIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
     getParentRoute: () => DashboardUsersUserIdRouteRoute,
   } as any)
 
-const DashboardUsersUserIdAddIndexRoute =
-  DashboardUsersUserIdAddIndexImport.update({
+const DashboardUsersUserIdEditIndexRoute =
+  DashboardUsersUserIdEditIndexImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => DashboardUsersUserIdAddRouteRoute,
+    getParentRoute: () => DashboardUsersUserIdEditRouteRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
@@ -159,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUsersUserIdRouteImport
       parentRoute: typeof DashboardUsersRouteImport
     }
+    '/dashboard/users/add': {
+      id: '/dashboard/users/add'
+      path: '/add'
+      fullPath: '/dashboard/users/add'
+      preLoaderRoute: typeof DashboardUsersAddRouteImport
+      parentRoute: typeof DashboardUsersRouteImport
+    }
     '/dashboard/users/': {
       id: '/dashboard/users/'
       path: '/'
@@ -166,11 +187,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUsersIndexImport
       parentRoute: typeof DashboardUsersRouteImport
     }
-    '/dashboard/users/$userId/add': {
-      id: '/dashboard/users/$userId/add'
-      path: '/add'
-      fullPath: '/dashboard/users/$userId/add'
-      preLoaderRoute: typeof DashboardUsersUserIdAddRouteImport
+    '/dashboard/users/$userId/edit': {
+      id: '/dashboard/users/$userId/edit'
+      path: '/edit'
+      fullPath: '/dashboard/users/$userId/edit'
+      preLoaderRoute: typeof DashboardUsersUserIdEditRouteImport
       parentRoute: typeof DashboardUsersUserIdRouteImport
     }
     '/dashboard/users/$userId/': {
@@ -180,12 +201,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUsersUserIdIndexImport
       parentRoute: typeof DashboardUsersUserIdRouteImport
     }
-    '/dashboard/users/$userId/add/': {
-      id: '/dashboard/users/$userId/add/'
+    '/dashboard/users/add/': {
+      id: '/dashboard/users/add/'
       path: '/'
-      fullPath: '/dashboard/users/$userId/add/'
-      preLoaderRoute: typeof DashboardUsersUserIdAddIndexImport
-      parentRoute: typeof DashboardUsersUserIdAddRouteImport
+      fullPath: '/dashboard/users/add/'
+      preLoaderRoute: typeof DashboardUsersAddIndexImport
+      parentRoute: typeof DashboardUsersAddRouteImport
+    }
+    '/dashboard/users/$userId/edit/': {
+      id: '/dashboard/users/$userId/edit/'
+      path: '/'
+      fullPath: '/dashboard/users/$userId/edit/'
+      preLoaderRoute: typeof DashboardUsersUserIdEditIndexImport
+      parentRoute: typeof DashboardUsersUserIdEditRouteImport
     }
   }
 }
@@ -206,29 +234,29 @@ const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
   authRouteRouteChildren,
 )
 
-interface DashboardUsersUserIdAddRouteRouteChildren {
-  DashboardUsersUserIdAddIndexRoute: typeof DashboardUsersUserIdAddIndexRoute
+interface DashboardUsersUserIdEditRouteRouteChildren {
+  DashboardUsersUserIdEditIndexRoute: typeof DashboardUsersUserIdEditIndexRoute
 }
 
-const DashboardUsersUserIdAddRouteRouteChildren: DashboardUsersUserIdAddRouteRouteChildren =
+const DashboardUsersUserIdEditRouteRouteChildren: DashboardUsersUserIdEditRouteRouteChildren =
   {
-    DashboardUsersUserIdAddIndexRoute: DashboardUsersUserIdAddIndexRoute,
+    DashboardUsersUserIdEditIndexRoute: DashboardUsersUserIdEditIndexRoute,
   }
 
-const DashboardUsersUserIdAddRouteRouteWithChildren =
-  DashboardUsersUserIdAddRouteRoute._addFileChildren(
-    DashboardUsersUserIdAddRouteRouteChildren,
+const DashboardUsersUserIdEditRouteRouteWithChildren =
+  DashboardUsersUserIdEditRouteRoute._addFileChildren(
+    DashboardUsersUserIdEditRouteRouteChildren,
   )
 
 interface DashboardUsersUserIdRouteRouteChildren {
-  DashboardUsersUserIdAddRouteRoute: typeof DashboardUsersUserIdAddRouteRouteWithChildren
+  DashboardUsersUserIdEditRouteRoute: typeof DashboardUsersUserIdEditRouteRouteWithChildren
   DashboardUsersUserIdIndexRoute: typeof DashboardUsersUserIdIndexRoute
 }
 
 const DashboardUsersUserIdRouteRouteChildren: DashboardUsersUserIdRouteRouteChildren =
   {
-    DashboardUsersUserIdAddRouteRoute:
-      DashboardUsersUserIdAddRouteRouteWithChildren,
+    DashboardUsersUserIdEditRouteRoute:
+      DashboardUsersUserIdEditRouteRouteWithChildren,
     DashboardUsersUserIdIndexRoute: DashboardUsersUserIdIndexRoute,
   }
 
@@ -237,13 +265,29 @@ const DashboardUsersUserIdRouteRouteWithChildren =
     DashboardUsersUserIdRouteRouteChildren,
   )
 
+interface DashboardUsersAddRouteRouteChildren {
+  DashboardUsersAddIndexRoute: typeof DashboardUsersAddIndexRoute
+}
+
+const DashboardUsersAddRouteRouteChildren: DashboardUsersAddRouteRouteChildren =
+  {
+    DashboardUsersAddIndexRoute: DashboardUsersAddIndexRoute,
+  }
+
+const DashboardUsersAddRouteRouteWithChildren =
+  DashboardUsersAddRouteRoute._addFileChildren(
+    DashboardUsersAddRouteRouteChildren,
+  )
+
 interface DashboardUsersRouteRouteChildren {
   DashboardUsersUserIdRouteRoute: typeof DashboardUsersUserIdRouteRouteWithChildren
+  DashboardUsersAddRouteRoute: typeof DashboardUsersAddRouteRouteWithChildren
   DashboardUsersIndexRoute: typeof DashboardUsersIndexRoute
 }
 
 const DashboardUsersRouteRouteChildren: DashboardUsersRouteRouteChildren = {
   DashboardUsersUserIdRouteRoute: DashboardUsersUserIdRouteRouteWithChildren,
+  DashboardUsersAddRouteRoute: DashboardUsersAddRouteRouteWithChildren,
   DashboardUsersIndexRoute: DashboardUsersIndexRoute,
 }
 
@@ -272,10 +316,12 @@ export interface FileRoutesByFullPath {
   '/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/users/$userId': typeof DashboardUsersUserIdRouteRouteWithChildren
+  '/dashboard/users/add': typeof DashboardUsersAddRouteRouteWithChildren
   '/dashboard/users/': typeof DashboardUsersIndexRoute
-  '/dashboard/users/$userId/add': typeof DashboardUsersUserIdAddRouteRouteWithChildren
+  '/dashboard/users/$userId/edit': typeof DashboardUsersUserIdEditRouteRouteWithChildren
   '/dashboard/users/$userId/': typeof DashboardUsersUserIdIndexRoute
-  '/dashboard/users/$userId/add/': typeof DashboardUsersUserIdAddIndexRoute
+  '/dashboard/users/add/': typeof DashboardUsersAddIndexRoute
+  '/dashboard/users/$userId/edit/': typeof DashboardUsersUserIdEditIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -285,7 +331,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/users': typeof DashboardUsersIndexRoute
   '/dashboard/users/$userId': typeof DashboardUsersUserIdIndexRoute
-  '/dashboard/users/$userId/add': typeof DashboardUsersUserIdAddIndexRoute
+  '/dashboard/users/add': typeof DashboardUsersAddIndexRoute
+  '/dashboard/users/$userId/edit': typeof DashboardUsersUserIdEditIndexRoute
 }
 
 export interface FileRoutesById {
@@ -298,10 +345,12 @@ export interface FileRoutesById {
   '/(auth)/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/users/$userId': typeof DashboardUsersUserIdRouteRouteWithChildren
+  '/dashboard/users/add': typeof DashboardUsersAddRouteRouteWithChildren
   '/dashboard/users/': typeof DashboardUsersIndexRoute
-  '/dashboard/users/$userId/add': typeof DashboardUsersUserIdAddRouteRouteWithChildren
+  '/dashboard/users/$userId/edit': typeof DashboardUsersUserIdEditRouteRouteWithChildren
   '/dashboard/users/$userId/': typeof DashboardUsersUserIdIndexRoute
-  '/dashboard/users/$userId/add/': typeof DashboardUsersUserIdAddIndexRoute
+  '/dashboard/users/add/': typeof DashboardUsersAddIndexRoute
+  '/dashboard/users/$userId/edit/': typeof DashboardUsersUserIdEditIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -314,10 +363,12 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/'
     | '/dashboard/users/$userId'
+    | '/dashboard/users/add'
     | '/dashboard/users/'
-    | '/dashboard/users/$userId/add'
+    | '/dashboard/users/$userId/edit'
     | '/dashboard/users/$userId/'
-    | '/dashboard/users/$userId/add/'
+    | '/dashboard/users/add/'
+    | '/dashboard/users/$userId/edit/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -326,7 +377,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/users'
     | '/dashboard/users/$userId'
-    | '/dashboard/users/$userId/add'
+    | '/dashboard/users/add'
+    | '/dashboard/users/$userId/edit'
   id:
     | '__root__'
     | '/'
@@ -337,10 +389,12 @@ export interface FileRouteTypes {
     | '/(auth)/signup'
     | '/dashboard/'
     | '/dashboard/users/$userId'
+    | '/dashboard/users/add'
     | '/dashboard/users/'
-    | '/dashboard/users/$userId/add'
+    | '/dashboard/users/$userId/edit'
     | '/dashboard/users/$userId/'
-    | '/dashboard/users/$userId/add/'
+    | '/dashboard/users/add/'
+    | '/dashboard/users/$userId/edit/'
   fileRoutesById: FileRoutesById
 }
 
@@ -393,6 +447,7 @@ export const routeTree = rootRoute
       "parent": "/dashboard",
       "children": [
         "/dashboard/users/$userId",
+        "/dashboard/users/add",
         "/dashboard/users/"
       ]
     },
@@ -412,28 +467,39 @@ export const routeTree = rootRoute
       "filePath": "dashboard/users/$userId/route.tsx",
       "parent": "/dashboard/users",
       "children": [
-        "/dashboard/users/$userId/add",
+        "/dashboard/users/$userId/edit",
         "/dashboard/users/$userId/"
+      ]
+    },
+    "/dashboard/users/add": {
+      "filePath": "dashboard/users/add/route.tsx",
+      "parent": "/dashboard/users",
+      "children": [
+        "/dashboard/users/add/"
       ]
     },
     "/dashboard/users/": {
       "filePath": "dashboard/users/index.tsx",
       "parent": "/dashboard/users"
     },
-    "/dashboard/users/$userId/add": {
-      "filePath": "dashboard/users/$userId/add/route.tsx",
+    "/dashboard/users/$userId/edit": {
+      "filePath": "dashboard/users/$userId/edit/route.tsx",
       "parent": "/dashboard/users/$userId",
       "children": [
-        "/dashboard/users/$userId/add/"
+        "/dashboard/users/$userId/edit/"
       ]
     },
     "/dashboard/users/$userId/": {
       "filePath": "dashboard/users/$userId/index.tsx",
       "parent": "/dashboard/users/$userId"
     },
-    "/dashboard/users/$userId/add/": {
-      "filePath": "dashboard/users/$userId/add/index.tsx",
-      "parent": "/dashboard/users/$userId/add"
+    "/dashboard/users/add/": {
+      "filePath": "dashboard/users/add/index.tsx",
+      "parent": "/dashboard/users/add"
+    },
+    "/dashboard/users/$userId/edit/": {
+      "filePath": "dashboard/users/$userId/edit/index.tsx",
+      "parent": "/dashboard/users/$userId/edit"
     }
   }
 }

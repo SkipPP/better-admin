@@ -5,11 +5,11 @@ import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 import authClient from "~/lib/utils/auth-client";
 
 import { toast } from "sonner";
-import { SignInButton } from "~/lib/components/SignInButton";
+import { SignInButton } from "~/lib/components/auth/SignInButton";
 
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "~/lib/components/ui/input";
 import { Label } from "~/lib/components/ui/label";
+import { Button } from "~/lib/components/ui/button";
 import {
   Card,
   CardTitle,
