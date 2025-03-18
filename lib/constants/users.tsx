@@ -37,7 +37,7 @@ export const filters = [
     title: "Motif de bannissement",
     options: [
       { value: "spam", label: "Spam", icon: ShieldAlert },
-      { value: "abuse", label: "Abuse", icon: CircleAlert },
+      { value: "abus", label: "Abus", icon: CircleAlert },
     ],
   },
 ];

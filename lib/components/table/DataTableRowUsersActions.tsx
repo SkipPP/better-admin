@@ -147,7 +147,7 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
             <input type="hidden" name="userId" value={user.id} />
 
             {!user.banned && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="banReason">Raison du bannissement</Label>
 
@@ -158,7 +158,7 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
 
                     <SelectContent>
                       <SelectItem value="spam">Spam</SelectItem>
-                      <SelectItem value="abuse">Abus</SelectItem>
+                      <SelectItem value="abus">Abus</SelectItem>
                       <SelectItem value="other">Autre</SelectItem>
                     </SelectContent>
                   </Select>
