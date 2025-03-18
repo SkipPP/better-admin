@@ -7,10 +7,10 @@ import {
   createRootRouteWithContext,
 } from "@tanstack/react-router";
 
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { getUser } from "~/lib/server/users";
+import { getUser } from "~/server/users";
 
 import { Toaster } from "sonner";
 import appCss from "~/lib/styles/app.css?url";
@@ -56,6 +56,8 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { readonly children: React.ReactNode }) {
+  // const [theme, setTheme] = useState<"light" | "dark">("light");
+
   return (
     // suppress since we're updating the "dark" class in a custom script below
     <html suppressHydrationWarning>
@@ -71,12 +73,12 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
             )`}
         </ScriptOnce>
 
-        <Toaster richColors />
+        <Toaster richColors theme={"dark"} />
 
         {children}
 
-        <ReactQueryDevtools buttonPosition="bottom-left" />
-        <TanStackRouterDevtools position="top-left" />
+        {/* <ReactQueryDevtools buttonPosition="bottom-left" />
+        <TanStackRouterDevtools position="top-left" /> */}
 
         <Scripts />
       </body>

@@ -1,15 +1,7 @@
 import { z } from "zod";
-import { queryOptions } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { readUser } from "~/lib/server/admin";
-
-function readUserById(userId: string) {
-  return queryOptions({
-    queryKey: ["user", userId],
-    queryFn: ({ signal }) => readUser({ signal, data: { userId } }),
-  });
-}
+import { readUser } from "~/server/admin";
 
 export const Route = createFileRoute("/dashboard/users/$userId/edit/")({
   validateSearch: z.object({
@@ -18,8 +10,8 @@ export const Route = createFileRoute("/dashboard/users/$userId/edit/")({
   loaderDeps: ({ search }) => ({
     username: search.username,
   }),
-  loader: async ({ context, params }) => {
-    const user = await context.queryClient.fetchQuery(readUserById(params.userId));
+  loader: async ({ params }) => {
+    const user = await readUser({ data: { userId: params.userId } });
 
     return user;
   },
@@ -27,7 +19,9 @@ export const Route = createFileRoute("/dashboard/users/$userId/edit/")({
 });
 
 function RouteComponent() {
+  // const { userId } = Route.useParams();
+
   const { user } = Route.useLoaderData();
 
-  return <div>you're gonna edit : {user?.name}</div>;
+  return <pre>{JSON.stringify(user, null, 2)}</pre>;
 }

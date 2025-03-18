@@ -34,8 +34,8 @@ function DashboardLayout() {
     <SidebarProvider>
       <AppSidebar user={user} />
 
-      <SidebarInset>
-        <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 rounded-xl">
+      <SidebarInset className="flex h-[calc(100vh-2rem)] flex-col overflow-hidden">
+        <header className="bg-background flex h-14 shrink-0 items-center gap-2">
           <div className="flex w-full items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
 
@@ -49,7 +49,7 @@ function DashboardLayout() {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
           <Outlet />
         </div>
       </SidebarInset>

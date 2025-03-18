@@ -1,5 +1,5 @@
 import React from "react";
-import { type ErrorComponentProps } from "@tanstack/react-router";
+import { type ErrorComponentProps, useRouter } from "@tanstack/react-router";
 
 import { APIError } from "better-auth";
 
@@ -10,10 +10,11 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 interface DefaultCatchBoundaryProps {
   error: Readonly<ErrorComponentProps | APIError>;
-  reset: () => void;
 }
 
-export function DefaultCatchBoundary({ error, reset }: DefaultCatchBoundaryProps) {
+export function DefaultCatchBoundary({ error }: DefaultCatchBoundaryProps) {
+  const router = useRouter();
+
   const errorCause = (error as APIError).status;
   const errorMessage =
     (error as APIError).message ||
@@ -42,8 +43,8 @@ export function DefaultCatchBoundary({ error, reset }: DefaultCatchBoundaryProps
 
       <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
         <Button
-          variant="outline"
-          className="flex w-full items-center gap-2 sm:w-auto"
+          variant="link"
+          className="flex w-full cursor-pointer items-center gap-2 sm:w-auto"
           onClick={() => (window.location.href = "/")}
         >
           <Home className="h-4 w-4" />
@@ -52,7 +53,7 @@ export function DefaultCatchBoundary({ error, reset }: DefaultCatchBoundaryProps
 
         <Button
           className="flex w-full items-center gap-2 sm:w-auto"
-          onClick={() => reset()}
+          onClick={() => router.invalidate()}
         >
           <RefreshCw className="h-4 w-4" />
           Réessayer

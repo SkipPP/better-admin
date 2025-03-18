@@ -23,65 +23,68 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   const navigate = useNavigate();
 
   return (
-    <div className="mt-4 flex items-center justify-between">
-      <div className="text-muted-foreground flex-1 text-sm">
-        {table.getFilteredSelectedRowModel().rows.length} sur{" "}
-        {table.getFilteredRowModel().rows.length} ligne(s) sélectionnée(s).
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center space-x-3">
+        <p className="text-sm">Lignes par page</p>
+
+        <Select
+          value={
+            location.search.limit
+              ? `${location.search.limit}`
+              : `${table.getState().pagination.pageSize}`
+          }
+          onValueChange={(value) => {
+            table.setPageSize(Number(value));
+
+            navigate({
+              to: location.pathname,
+              search: (prev) => ({
+                ...prev,
+                limit: Number(value),
+              }),
+            });
+          }}
+        >
+          <SelectTrigger className="h-8! w-[70px]">
+            <SelectValue
+              placeholder={
+                location.search.limit
+                  ? `${location.search.limit}`
+                  : `${table.getState().pagination.pageSize}`
+              }
+            />
+          </SelectTrigger>
+
+          <SelectContent side="top">
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <SelectItem
+                key={pageSize}
+                value={`${pageSize}`}
+                onClick={() => {
+                  table.setPageSize(pageSize);
+                }}
+              >
+                {pageSize}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <p className="text-muted-foreground text-sm">
+          {table.getFilteredRowModel().rows.length} ligne(s)
+        </p>
       </div>
 
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Lignes par page</p>
-
-          <Select
-            value={
-              location.search.limit
-                ? `${location.search.limit}`
-                : `${table.getState().pagination.pageSize}`
-            }
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
-
-              navigate({
-                to: location.pathname,
-                search: { limit: Number(value) },
-              });
-            }}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue
-                placeholder={
-                  location.search.limit
-                    ? `${location.search.limit}`
-                    : `${table.getState().pagination.pageSize}`
-                }
-              />
-            </SelectTrigger>
-
-            <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem
-                  key={pageSize}
-                  value={`${pageSize}`}
-                  onClick={() => {
-                    table.setPageSize(pageSize);
-                  }}
-                >
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+      <div className="flex items-center space-x-2 lg:space-x-4">
+        <p className="text-sm">
           Page {table.getState().pagination.pageIndex + 1} sur {table.getPageCount()}
-        </div>
+        </p>
 
         <div className="flex items-center space-x-2">
           <Button
+            size="sm"
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="hidden lg:flex"
             onClick={() => {
               table.setPageIndex(0);
 
@@ -96,12 +99,12 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Aller à la première page</span>
-            <ChevronsLeft />
+            <ChevronsLeft /> First
           </Button>
 
           <Button
+            size="sm"
             variant="outline"
-            className="h-8 w-8 p-0"
             onClick={() => {
               table.previousPage();
 
@@ -116,12 +119,12 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Aller à la page précédente</span>
-            <ChevronLeft />
+            <ChevronLeft /> Previous
           </Button>
 
           <Button
+            size="sm"
             variant="outline"
-            className="h-8 w-8 p-0"
             onClick={() => {
               table.nextPage();
 
@@ -136,12 +139,13 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Aller à la page suivante</span>
-            <ChevronRight />
+            <ChevronRight /> Next
           </Button>
 
           <Button
+            size="sm"
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="hidden lg:flex"
             onClick={() => {
               table.setPageIndex(table.getPageCount() - 1);
 
@@ -156,7 +160,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Aller à la dernière page</span>
-            <ChevronsRight />
+            <ChevronsRight /> Last
           </Button>
         </div>
       </div>

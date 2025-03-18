@@ -1,23 +1,48 @@
+import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { UserWithRole } from "better-auth/plugins/admin";
 
-import {
-  Circle,
-  CircleAlert,
-  ShieldAlert,
-  HelpCircle,
-  UserCheck,
-  User as UserIcon,
-} from "lucide-react";
-
-import { DataTableRowActions } from "~/lib/components/table/DataTableRowActions";
+import { Badge } from "~/lib/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "~/lib/components/ui/avatar";
 import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
+import { DataTableRowUsersActions } from "~/lib/components/table/DataTableRowUsersActions";
 
-export const columns: (
-  onEdit: (user: UserWithRole) => void,
-  onDelete: (user: UserWithRole) => void,
-) => ColumnDef<UserWithRole>[] = (onEdit, onDelete) => [
+import {
+  UserCheck,
+  CircleAlert,
+  ShieldAlert,
+  User as UserIcon,
+  Shield,
+} from "lucide-react";
+
+export const filters = [
+  {
+    name: "role",
+    title: "Rôle",
+    options: [
+      {
+        label: "Administrateur",
+        value: "admin",
+        icon: UserCheck,
+      },
+      {
+        label: "Utilisateur",
+        value: "user",
+        icon: UserIcon,
+      },
+    ],
+  },
+  {
+    name: "banReason",
+    title: "Motif de bannissement",
+    options: [
+      { value: "spam", label: "Spam", icon: ShieldAlert },
+      { value: "abuse", label: "Abuse", icon: CircleAlert },
+    ],
+  },
+];
+
+export const columns: ColumnDef<UserWithRole>[] = [
   {
     accessorKey: "image",
     accessorFn: (row) => row.image,
@@ -44,22 +69,32 @@ export const columns: (
     accessorKey: "name",
     accessorFn: (row) => row.name,
     meta: {
-      label: "Nom",
+      label: "Utilisateur",
     },
     header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
-      return <span>{row.getValue("name")}</span>;
-    },
-  },
-  {
-    accessorKey: "email",
-    accessorFn: (row) => row.email,
-    meta: {
-      label: "Email",
-    },
-    header: ({ column }) => <DataTableColumnHeader column={column} />,
-    cell: ({ row }) => {
-      return <span>{row.getValue("email")}</span>;
+      return (
+        <div className="flex flex-col items-start">
+          <Link
+            preload="intent"
+            to="/dashboard/users/$userId"
+            params={{ userId: row.original.id }}
+            search={{
+              username: row.original.name,
+            }}
+            className="font-medium hover:underline"
+          >
+            {row.getValue("name")}
+          </Link>
+
+          <a
+            href={`mailto:${row.original.email}`}
+            className="text-muted-foreground hover:underline"
+          >
+            {row.original.email}
+          </a>
+        </div>
+      );
     },
   },
   {
@@ -77,37 +112,6 @@ export const columns: (
     enableGlobalFilter: false,
   },
   {
-    accessorKey: "role",
-    accessorFn: (row) => row.role,
-    meta: {
-      label: "Rôle",
-    },
-    header: ({ column }) => <DataTableColumnHeader column={column} />,
-    cell: ({ row }) => {
-      const role = [
-        {
-          label: "Administrateur",
-          value: "admin",
-          icon: UserCheck,
-        },
-        {
-          label: "Utilisateur",
-          value: "user",
-          icon: UserIcon,
-        },
-      ].find((role) => role.value === row.getValue("role"));
-
-      if (!role) {
-        return null;
-      }
-
-      return <span className="truncate font-medium">{role.label}</span>;
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
     accessorKey: "createdAt",
     accessorFn: (row) => row.createdAt,
     meta: {
@@ -122,36 +126,64 @@ export const columns: (
     },
   },
   {
-    accessorKey: "banReason",
-    accessorFn: (row) => row.banReason,
+    accessorKey: "role",
+    accessorFn: (row) => row.role,
     meta: {
-      label: "Motif de bannissement",
+      label: "Rôle",
     },
-    header: ({ column }) => <DataTableColumnHeader column={column} className="px-2.5" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
-      const banReason = [
-        {
-          value: "spam",
-          label: "Spam",
-          icon: HelpCircle,
-        },
-        {
-          value: "abuse",
-          label: "Abuse",
-          icon: Circle,
-        },
-        {
-          value: "other",
-          label: "Other",
-          icon: Circle,
-        },
-      ].find((banReason) => banReason.value === row.getValue("banReason"));
+      const role = filters[0].options.find((role) => role.value === row.getValue("role"));
 
-      if (!banReason) {
+      if (!role) {
         return null;
       }
 
-      return <span>{banReason.label}</span>;
+      return (
+        <Badge variant="secondary">
+          <role.icon className="mr-1 h-4 w-4" />
+          {role.label}
+        </Badge>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "banReason",
+    accessorFn: (row) => row.banReason,
+    meta: {
+      label: "Banni",
+    },
+    header: ({ column }) => <DataTableColumnHeader column={column} className="px-2.5" />,
+    cell: ({ row }) => {
+      if (!row.getValue("banReason")) {
+        return <span className="text-muted-foreground italic">Aucun bannissement</span>;
+      }
+
+      const banExpires = new Date(row.original.banExpires ?? "");
+      const today = new Date();
+
+      // Calculate the difference in days
+      const diffTime = banExpires.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // Format the remaining days text
+      const remainingDaysText = `${diffDays} jour${diffDays > 1 ? "s" : ""} restant${diffDays > 1 ? "s" : ""}`;
+
+      return (
+        <span className="inline">
+          <Badge variant="outline">
+            <Shield className="mr-1 h-4 w-4" />
+            {(row.getValue("banReason") as string).toUpperCase()}
+          </Badge>
+
+          <span className="text-muted-foreground ml-1 text-xs italic">
+            ({remainingDaysText})
+          </span>
+        </span>
+      );
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
@@ -160,46 +192,10 @@ export const columns: (
   },
   {
     id: "actions",
-    accessorFn: (row) => row.id,
     meta: {
-      label: "Actions",
+      align: "right",
     },
-    header: ({ column }) => <DataTableColumnHeader column={column} className="px-2.5" />,
-    cell: ({ row }) => (
-      <DataTableRowActions
-        onEdit={() => onEdit(row.original)}
-        onDelete={() => onDelete(row.original)}
-      />
-    ),
-    enableSorting: false,
-    enableColumnFilter: false,
-    enableGlobalFilter: false,
-  },
-];
-
-export const filters = [
-  {
-    name: "role",
-    title: "Rôle",
-    options: [
-      {
-        label: "Administrateur",
-        value: "admin",
-        icon: UserCheck,
-      },
-      {
-        label: "Utilisateur",
-        value: "user",
-        icon: UserIcon,
-      },
-    ],
-  },
-  {
-    name: "banReason",
-    title: "Motif de bannissement",
-    options: [
-      { value: "spam", label: "Spam", icon: ShieldAlert },
-      { value: "abuse", label: "Abuse", icon: CircleAlert },
-    ],
+    header: () => null,
+    cell: ({ row }) => <DataTableRowUsersActions user={row.original} />,
   },
 ];

@@ -1,3 +1,5 @@
+import React from "react";
+
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard/")({
@@ -6,7 +8,7 @@ export const Route = createFileRoute("/dashboard/")({
 
 function DashboardIndex() {
   return (
-    <div>
+    <React.Fragment>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget
       aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam
       euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc
@@ -123,6 +125,6 @@ function DashboardIndex() {
       reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
       Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
       mollit anim id est laborum.
-    </div>
+    </React.Fragment>
   );
 }

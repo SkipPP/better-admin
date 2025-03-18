@@ -25,10 +25,6 @@ export const Breadcrumb = () => {
           const last = index === pathNames.length - 1;
           const href = `/${pathNames.slice(0, index + 1).join("/")}`;
 
-          if (link === "dashboard") {
-            return;
-          }
-
           const displayName =
             link === userId && username
               ? String(username).charAt(0).toUpperCase() + String(username).slice(1)

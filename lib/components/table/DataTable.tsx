@@ -28,6 +28,7 @@ import {
   TableHeader,
 } from "~/lib/components/ui/table";
 
+import { Separator } from "~/lib/components/ui/separator";
 import { DataTableToolbar } from "~/lib/components/table/DataTableToolbar";
 import { DataTablePagination } from "~/lib/components/table/DataTablePagination";
 
@@ -35,8 +36,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
 
-  onRowClick?: (row: TData) => void;
-
+  title?: string;
+  search?: boolean;
   filters: {
     name: string;
     title: string;
@@ -51,8 +52,9 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  title,
+  search = true,
   filters,
-  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const location = useLocation();
 
@@ -93,65 +95,56 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <React.Fragment>
-      <DataTableToolbar table={table} filters={filters} />
+    <div className="rounded-lg border border-dashed">
+      <DataTableToolbar table={table} filters={filters} title={title} search={search} />
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan} className="py-2">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
+      <Separator />
+
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id} colSpan={header.colSpan} className="py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className="p-4"
+                    align={cell.column.columnDef.meta?.align ?? "left"}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableHeader>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                Aucun résultat.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  data-href={onRowClick && "href"}
-                  className="data-[href]:cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    if (row.id !== "actions" && onRowClick) {
-                      onRowClick(row.original);
-                    } else if (row.getCanSelect()) {
-                      row.getToggleSelectedHandler();
-                    }
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-5 py-4">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Aucun résultat.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <Separator />
 
       <DataTablePagination table={table} />
-    </React.Fragment>
+    </div>
   );
 }
