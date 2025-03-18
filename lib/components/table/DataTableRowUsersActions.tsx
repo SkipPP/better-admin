@@ -74,8 +74,6 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
             <Shield /> <span>Bannir</span>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
-
           {/* <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
             <Pencil /> <span>Modifier</span>
           </DropdownMenuItem> */}
@@ -83,6 +81,8 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
           <DropdownMenuItem onClick={() => setIsRoleDialogOpen(true)}>
             <UserCheck /> <span>Modifier le rôle</span>
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
 
           <DropdownMenuItem
             variant="destructive"
