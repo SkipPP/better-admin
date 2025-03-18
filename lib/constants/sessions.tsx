@@ -87,12 +87,4 @@ export const columns: ColumnDef<Session>[] = [
       return value.includes((row.getValue(id) as string).split("/")[0]);
     },
   },
-  {
-    accessorKey: "actions",
-    meta: {
-      align: "right",
-    },
-    header: () => null,
-    cell: () => <span>actions</span>,
-  },
 ];

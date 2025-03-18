@@ -27,7 +27,14 @@ export function NavList({
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <Link to={item.url} search={item.search}>
+              <Link
+                to={item.url}
+                search={item.search}
+                activeProps={{
+                  className: "bg-muted",
+                }}
+                activeOptions={{ exact: true }}
+              >
                 <item.icon />
 
                 <span>{item.name}</span>
