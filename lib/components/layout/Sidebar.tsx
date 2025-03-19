@@ -5,7 +5,7 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { User } from "~/server/auth";
 import authClient from "~/lib/utils/auth-client";
 
-import { Command, User as UserIcon, UserPlus } from "lucide-react";
+import { Building, Command, Plus, User as UserIcon } from "lucide-react";
 
 import { NavUser } from "~/lib/components/layout/NavUser";
 import { NavList } from "~/lib/components/layout/NavList";
@@ -20,22 +20,40 @@ import {
   SidebarMenuButton,
 } from "~/lib/components/ui/sidebar";
 
-const data = [
-  {
-    name: "Utilisateurs",
-    url: "/dashboard/users",
-    search: {
-      limit: 10,
-      currentPage: 0,
+const data = {
+  users: [
+    {
+      name: "Utilisateurs",
+      url: "/dashboard/users",
+      search: {
+        limit: 10,
+        currentPage: 0,
+      },
+      icon: UserIcon,
     },
-    icon: UserIcon,
-  },
-  {
-    name: "Ajouter un utilisateur",
-    url: "/dashboard/users/add",
-    icon: UserPlus,
-  },
-];
+    {
+      name: "Ajouter un utilisateur",
+      url: "/dashboard/users/add",
+      icon: Plus,
+    },
+  ],
+  organizations: [
+    {
+      name: "Organisations",
+      url: "/dashboard/organizations",
+      search: {
+        limit: 10,
+        currentPage: 0,
+      },
+      icon: Building,
+    },
+    {
+      name: "Ajouter une organisation",
+      url: "/dashboard/organizations/add",
+      icon: Plus,
+    },
+  ],
+};
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: User | null;
@@ -66,7 +84,8 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavList items={data} />
+        <NavList title="Gestion des utilisateurs" items={data.users} />
+        <NavList title="Gestions des organizations" items={data.organizations} />
       </SidebarContent>
 
       <SidebarFooter>

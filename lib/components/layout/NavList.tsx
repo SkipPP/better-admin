@@ -10,8 +10,10 @@ import {
 } from "~/lib/components/ui/sidebar";
 
 export function NavList({
+  title,
   items,
 }: {
+  title: string;
   items: {
     name: string;
     url: string;
@@ -21,7 +23,7 @@ export function NavList({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Gestion des utilisateurs</SidebarGroupLabel>
+      <SidebarGroupLabel>{title}</SidebarGroupLabel>
 
       <SidebarMenu>
         {items.map((item) => (

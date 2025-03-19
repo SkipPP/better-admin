@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { admin } from "better-auth/plugins/admin";
+import { admin, organization } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import { db } from "./db";
@@ -10,7 +10,7 @@ export const auth = betterAuth({
     provider: "pg",
   }),
 
-  plugins: [admin()],
+  plugins: [admin(), organization()],
 
   // https://www.better-auth.com/docs/concepts/oauth
   socialProviders: {
