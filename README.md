@@ -48,7 +48,7 @@ Better Auth is currently configured for OAuth with GitHub, Google, Microsoft and
 
 If you want to use email/password authentication or change providers, update the [auth config](./lib/server/auth.ts#L36) and [signin page](./app/routes/signin.tsx) with your own UI. You can use [shadcn/ui login blocks](https://ui.shadcn.com/blocks/login) or [@daveyplate/better-auth-ui](https://better-auth-ui.com/) as a starting point.
 
-### Better Auth is configured to use the admin() plugin to manage users, sessions, and more.
+### Better Auth is configured to use the `admin()` plugin to manage users, sessions, and more.
 
 Dont't forget to update the db by runnig :
 
