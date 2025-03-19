@@ -9,31 +9,21 @@ import { Card } from "~/lib/components/ui/card";
 import { Input } from "~/lib/components/ui/input";
 import { Label } from "~/lib/components/ui/label";
 import { Button } from "~/lib/components/ui/button";
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-} from "~/lib/components/ui/select";
 
-import { createUser } from "~/server/admin";
+import { createOrganization } from "~/server/organizations";
 
 // Define validation schema
-const userSchema = z.object({
+const organizationSchema = z.object({
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  email: z.string().email("Veuillez entrer une adresse email valide"),
-  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-  role: z.enum(["admin", "user"], {
-    message: "Veuillez sélectionner un rôle valide",
-  }),
+  slug: z.string().min(2, "Le slug doit contenir au moins 2 caractères"),
+  logo: z.string().nullish(),
 });
 
-export const Route = createFileRoute("/dashboard/users copy/add/")({
-  component: AddUserRoute,
+export const Route = createFileRoute("/dashboard/organizations/add/")({
+  component: AddOrganizationRoute,
 });
 
-function AddUserRoute() {
+function AddOrganizationRoute() {
   const router = useRouter();
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -45,13 +35,12 @@ function AddUserRoute() {
     (formData: FormData) => {
       const data = {
         name: formData.get("name") as string,
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
-        role: formData.get("role") as string,
+        slug: formData.get("slug") as string,
+        logo: formData.get("logo") as string,
       };
 
       try {
-        userSchema.parse(data);
+        organizationSchema.parse(data);
         setErrors({});
 
         return true;
@@ -84,10 +73,15 @@ function AddUserRoute() {
       setIsSubmitting(true);
 
       try {
-        await createUser({ data: formData });
+        const { organization } = await createOrganization({ data: formData });
 
-        router.invalidate();
-        toast.success("Utilisateur créé avec succès");
+        router.navigate({
+          to: "/dashboard/organizations/$organizationId",
+          params: { organizationId: organization?.id ?? "" },
+          search: { organizationName: organization?.name },
+        });
+
+        toast.success("Organisation créée avec succès");
       } catch (error) {
         toast.error("Une erreur est survenue :", {
           description: error instanceof Error ? error.message : "Erreur inconnue",
@@ -103,10 +97,10 @@ function AddUserRoute() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-start">
-          <h1 className="text-2xl font-bold">Ajouter un utilisateur</h1>
+          <h1 className="text-2xl font-bold">Ajouter une organisation</h1>
 
           <p className="text-muted-foreground text-sm">
-            Créez un nouvel utilisateur en renseignant les informations ci-dessous.
+            Créez une nouvelle organisation en renseignant les informations ci-dessous.
           </p>
         </div>
 
@@ -128,40 +122,21 @@ function AddUserRoute() {
             />
 
             <FormField
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="user@example.com"
+              label="Slug"
+              name="slug"
+              type="text"
+              placeholder="john-doe"
               errors={errors}
             />
 
             <FormField
-              label="Mot de passe"
-              name="password"
-              type="password"
-              placeholder="********"
+              disabled
+              label="Logo"
+              name="logo"
+              type="file"
+              accept="image/*"
               errors={errors}
             />
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="role">Rôle</Label>
-
-              <Select name="role">
-                <SelectTrigger
-                  className="w-full shadow-none"
-                  aria-invalid={!!errors.role}
-                >
-                  <SelectValue placeholder="Sélectionner un rôle" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="admin">Administrateur</SelectItem>
-                  <SelectItem value="user">Utilisateur</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {errors.role && <p className="text-destructive text-xs">{errors.role}</p>}
-            </div>
           </div>
 
           <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
@@ -171,7 +146,7 @@ function AddUserRoute() {
               disabled={isSubmitting}
               className="cursor-default shadow-none"
             >
-              <Link to="/dashboard/users" search={{ limit: 10, currentPage: 0 }}>
+              <Link to="/dashboard/organizations" search={{ limit: 10, currentPage: 0 }}>
                 Annuler
               </Link>
             </Button>
@@ -199,18 +174,22 @@ function AddUserRoute() {
 
 // Reusable form field component
 function FormField({
+  disabled = false,
   errors,
   label,
   name,
   type,
   placeholder,
+  accept,
   autoFocus = false,
 }: {
+  disabled?: boolean;
   errors: Record<string, string>;
   label: string;
   name: string;
   type: string;
   placeholder?: string;
+  accept?: string;
   autoFocus?: boolean;
 }) {
   return (
@@ -223,7 +202,9 @@ function FormField({
         type={type}
         placeholder={placeholder}
         autoFocus={autoFocus}
+        accept={accept}
         aria-invalid={!!errors[name]}
+        disabled={disabled}
         className="shadow-none"
       />
 

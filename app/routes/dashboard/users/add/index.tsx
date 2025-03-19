@@ -84,9 +84,14 @@ function AddUserRoute() {
       setIsSubmitting(true);
 
       try {
-        await createUser({ data: formData });
+        const { user } = await createUser({ data: formData });
 
-        router.invalidate();
+        router.navigate({
+          to: "/dashboard/users/$userId",
+          params: { userId: user.id },
+          search: { username: user.name, limit: 10, currentPage: 0 },
+        });
+
         toast.success("Utilisateur créé avec succès");
       } catch (error) {
         toast.error("Une erreur est survenue :", {
