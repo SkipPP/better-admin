@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createServerFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
+import { getWebRequest, setCookie } from "@tanstack/react-start/server";
 
 import { auth } from "./auth";
 import { authMiddleware } from "../lib/middleware/auth-guard";
@@ -418,7 +418,9 @@ export const impersonateUser = createServerFn({ method: "POST" })
     try {
       const data = await auth.api.impersonateUser({ headers, body: { userId } });
 
-      return { session: data.session };
+      setCookie("session_token", data.session.token);
+
+      return { session: data.session, user: data.user };
     } catch (error) {
       if (error instanceof Error && error.message) {
         throw new Error(error.message);

@@ -6,7 +6,10 @@ import { auth } from "./auth";
 export const getUser = createServerFn({ method: "GET" }).handler(async () => {
   const { headers } = getWebRequest()!;
 
-  const session = await auth.api.getSession({ headers });
+  const session = await auth.api.getSession({
+    headers,
+    query: { disableCookieCache: true },
+  });
 
   return session?.user || null;
 });

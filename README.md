@@ -10,7 +10,7 @@ A minimal starter template for 🏝️ TanStack Start.
 
 ## Getting Started
 
-1. [Use this template](https://github.com/new?template_name=tanstarter&template_owner=dotnize) or clone this repository.
+1. Clone this repository.
 
 2. Install dependencies:
 

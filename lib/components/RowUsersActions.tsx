@@ -121,7 +121,7 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
               <Pencil /> <span>Modifier</span>
             </DropdownMenuItem> */}
 
-          <DropdownMenuItem onClick={() => openDialog("impersonate")}>
+          <DropdownMenuItem disabled onClick={() => openDialog("impersonate")}>
             <UserRound /> <span>Impersoner</span>
           </DropdownMenuItem>
 
@@ -456,8 +456,8 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
                   .then(() => {
                     closeDialog("impersonate");
 
-                    router.invalidate();
-                    toast.success("Utilisateur supprimé avec succès");
+                    router.navigate({ to: "/" });
+                    toast.success("Utilisateur impersoné avec succès");
                   })
                   .catch((error) => handleApiError(error));
               } finally {

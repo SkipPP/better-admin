@@ -32,6 +32,14 @@ export const auth = betterAuth({
   // emailAndPassword: {
   //   enabled: true,
   // },
+
+  advanced: {
+    cookies: {
+      session_token: {
+        name: "session_token",
+      },
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;
