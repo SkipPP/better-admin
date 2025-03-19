@@ -130,7 +130,7 @@ export default function AddOrganizationDialog() {
               label="Nom"
               name="name"
               type="text"
-              placeholder="Dev"
+              placeholder="dev organization"
               errors={errors}
             />
 
@@ -138,7 +138,7 @@ export default function AddOrganizationDialog() {
               label="Slug"
               name="slug"
               type="text"
-              placeholder="ab"
+              placeholder="dev-organization"
               errors={errors}
             />
 

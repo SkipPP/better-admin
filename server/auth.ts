@@ -46,3 +46,16 @@ export type Session = typeof auth.$Infer.Session;
 export type User = Session["user"];
 
 export type Organization = typeof auth.$Infer.Organization;
+export type OrganizationMember = {
+  id: string;
+  organizationId: string;
+  createdAt: Date;
+  role: "member" | "admin" | "owner";
+  teamId?: string | undefined;
+  userId: string;
+  user: {
+    email: string;
+    name: string;
+    image?: string | undefined;
+  };
+};

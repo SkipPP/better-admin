@@ -116,7 +116,7 @@ function AddOrganizationRoute() {
               label="Nom"
               name="name"
               type="text"
-              placeholder="John Doe"
+              placeholder="dev organization"
               autoFocus
               errors={errors}
             />
@@ -125,7 +125,7 @@ function AddOrganizationRoute() {
               label="Slug"
               name="slug"
               type="text"
-              placeholder="john-doe"
+              placeholder="dev-organization"
               errors={errors}
             />
 
