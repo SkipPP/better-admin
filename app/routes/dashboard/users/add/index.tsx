@@ -117,12 +117,13 @@ function AddUserRoute() {
 
       <Card className="border-none py-0 shadow-none md:border-dashed md:py-6">
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 px-0 md:px-6">
-          <div className="grid grid-cols-1 gap-4 px-0 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 px-0 md:grid-cols-2">
             <FormField
               label="Nom"
               name="name"
               type="text"
               placeholder="John Doe"
+              autoFocus
               errors={errors}
             />
 
@@ -146,7 +147,10 @@ function AddUserRoute() {
               <Label htmlFor="role">Rôle</Label>
 
               <Select name="role">
-                <SelectTrigger className="w-full" aria-invalid={!!errors.role}>
+                <SelectTrigger
+                  className="w-full shadow-none"
+                  aria-invalid={!!errors.role}
+                >
                   <SelectValue placeholder="Sélectionner un rôle" />
                 </SelectTrigger>
 
@@ -161,13 +165,23 @@ function AddUserRoute() {
           </div>
 
           <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
-            <Button asChild variant="outline" disabled={isSubmitting}>
+            <Button
+              asChild
+              variant="outline"
+              disabled={isSubmitting}
+              className="cursor-default shadow-none"
+            >
               <Link to="/dashboard/users" search={{ limit: 10, currentPage: 0 }}>
                 Annuler
               </Link>
             </Button>
 
-            <Button type="submit" variant="secondary" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={isSubmitting}
+              className="cursor-pointer"
+            >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Création
@@ -190,12 +204,14 @@ function FormField({
   name,
   type,
   placeholder,
+  autoFocus = false,
 }: {
   errors: Record<string, string>;
   label: string;
   name: string;
   type: string;
   placeholder?: string;
+  autoFocus?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -206,7 +222,9 @@ function FormField({
         name={name}
         type={type}
         placeholder={placeholder}
+        autoFocus={autoFocus}
         aria-invalid={!!errors[name]}
+        className="shadow-none"
       />
 
       {errors[name] && <p className="text-destructive text-xs">{errors[name]}</p>}

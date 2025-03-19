@@ -118,12 +118,16 @@ export default function AddUserDialog() {
         setIsOpen(open);
       }}
     >
-      <Button variant="secondary" onClick={() => setIsOpen(true)}>
+      <Button
+        variant="secondary"
+        onClick={() => setIsOpen(true)}
+        className="cursor-pointer"
+      >
         <Plus className="mr-1 h-4 w-4" /> Ajouter
       </Button>
 
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="gap-0">
           <DialogTitle>Ajouter un utilisateur</DialogTitle>
 
           <DialogDescription>
@@ -133,55 +137,38 @@ export default function AddUserDialog() {
 
         <form ref={formRef} className="grid gap-y-6" onSubmit={handleSubmit}>
           <div className="grid gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Nom</Label>
+            <FormField
+              label="Nom"
+              name="name"
+              type="text"
+              placeholder="John Doe"
+              errors={errors}
+            />
 
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="John Doe"
-                aria-invalid={!!errors.name}
-              />
+            <FormField
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="user@example.com"
+              errors={errors}
+            />
 
-              {errors.name && <p className="text-destructive text-xs">{errors.name}</p>}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
-
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="user@example.com"
-                aria-invalid={!!errors.email}
-              />
-
-              {errors.email && <p className="text-destructive text-xs">{errors.email}</p>}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Mot de passe</Label>
-
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="********"
-                aria-invalid={!!errors.password}
-              />
-
-              {errors.password && (
-                <p className="text-destructive text-xs">{errors.password}</p>
-              )}
-            </div>
+            <FormField
+              label="Mot de passe"
+              name="password"
+              type="password"
+              placeholder="********"
+              errors={errors}
+            />
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="role">Rôle</Label>
 
               <Select name="role">
-                <SelectTrigger className="w-full" aria-invalid={!!errors.role}>
+                <SelectTrigger
+                  className="w-full shadow-none"
+                  aria-invalid={!!errors.role}
+                >
                   <SelectValue placeholder="Sélectionner un rôle" />
                 </SelectTrigger>
 
@@ -197,12 +184,22 @@ export default function AddUserDialog() {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isSubmitting}
+                className="shadow-none"
+              >
                 Annuler
               </Button>
             </DialogClose>
 
-            <Button type="submit" variant="secondary" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={isSubmitting}
+              className="cursor-pointer"
+            >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Création
@@ -215,5 +212,40 @@ export default function AddUserDialog() {
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// Reusable form field component
+function FormField({
+  errors,
+  label,
+  name,
+  type,
+  placeholder,
+  autoFocus = false,
+}: {
+  errors: Record<string, string>;
+  label: string;
+  name: string;
+  type: string;
+  placeholder?: string;
+  autoFocus?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={name}>{label}</Label>
+
+      <Input
+        id={name}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        aria-invalid={!!errors[name]}
+        className="shadow-none"
+      />
+
+      {errors[name] && <p className="text-destructive text-xs">{errors[name]}</p>}
+    </div>
   );
 }

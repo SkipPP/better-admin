@@ -2,6 +2,7 @@ import { Session } from "better-auth";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "../components/ui/badge";
+import { DataTableRowSessionsActions } from "../components/RowSessionsActions";
 import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
 
 import { SiFirefox, SiGooglechrome, SiSafari } from "@icons-pack/react-simple-icons";
@@ -85,6 +86,16 @@ export const columns: ColumnDef<Session>[] = [
     },
     filterFn: (row, id, value) => {
       return value.includes((row.getValue(id) as string).split("/")[0]);
+    },
+  },
+  {
+    accessorKey: "actions",
+    meta: {
+      align: "right",
+    },
+    header: () => null,
+    cell: ({ row }) => {
+      return <DataTableRowSessionsActions session={row.original} />;
     },
   },
 ];

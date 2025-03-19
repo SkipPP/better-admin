@@ -26,5 +26,5 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
     throw new Error("Unauthorized");
   }
 
-  return next({ context: { user: session.user } });
+  return next({ context: { user: session.user, session: session.session } });
 });

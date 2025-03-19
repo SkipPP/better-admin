@@ -385,3 +385,45 @@ export const revokeAllUserSessions = createServerFn({ method: "POST" })
       throw new Error("Erreur lors de la révocation des sessions de l'utilisateur");
     }
   });
+
+export const revokeUserSession = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(z.object({ sessionToken: z.string() }))
+  .handler(async ({ data: { sessionToken }, context }) => {
+    const { headers } = getWebRequest()!;
+
+    if (sessionToken === context?.session?.token) {
+      throw new Error("Vous ne pouvez pas révoquer votre propre session");
+    }
+
+    try {
+      const data = await auth.api.revokeUserSession({ headers, body: { sessionToken } });
+
+      return { success: data.success };
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
+
+      throw new Error("Erreur lors de la révocation de la session de l'utilisateur");
+    }
+  });
+
+export const impersonateUser = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(z.object({ userId: z.string() }))
+  .handler(async ({ data: { userId } }) => {
+    const { headers } = getWebRequest()!;
+
+    try {
+      const data = await auth.api.impersonateUser({ headers, body: { userId } });
+
+      return { session: data.session };
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
+
+      throw new Error("Erreur lors de l'impersonation de l'utilisateur");
+    }
+  });

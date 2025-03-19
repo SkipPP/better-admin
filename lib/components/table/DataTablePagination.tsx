@@ -45,7 +45,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             });
           }}
         >
-          <SelectTrigger className="h-8! w-[70px]">
+          <SelectTrigger className="h-8! w-[70px] shadow-none">
             <SelectValue
               placeholder={
                 location.search.limit
@@ -84,7 +84,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           <Button
             size="sm"
             variant="outline"
-            className="hidden lg:flex"
+            className="hidden shadow-none lg:flex"
             onClick={() => {
               table.setPageIndex(0);
 
@@ -105,6 +105,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           <Button
             size="sm"
             variant="outline"
+            className="shadow-none"
             onClick={() => {
               table.previousPage();
 
@@ -125,6 +126,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           <Button
             size="sm"
             variant="outline"
+            className="shadow-none"
             onClick={() => {
               table.nextPage();
 
@@ -145,7 +147,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           <Button
             size="sm"
             variant="outline"
-            className="hidden lg:flex"
+            className="hidden shadow-none lg:flex"
             onClick={() => {
               table.setPageIndex(table.getPageCount() - 1);
 

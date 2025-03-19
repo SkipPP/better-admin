@@ -41,7 +41,7 @@ export function DataTableToolbar<TData>({
         {search && (
           <Input
             placeholder="Rechercher..."
-            className="bg-background h-8! w-[150px] lg:w-[250px]"
+            className="bg-background h-8! w-[150px] shadow-none lg:w-[250px]"
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)

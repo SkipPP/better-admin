@@ -2,9 +2,16 @@ import { memo, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 
 import { UserWithRole } from "better-auth/plugins/admin";
-import { banUser, deleteUser, setUserRole, unbanUser, updateUser } from "~/server/admin";
+import {
+  banUser,
+  deleteUser,
+  impersonateUser,
+  setUserRole,
+  unbanUser,
+  updateUser,
+} from "~/server/admin";
 
-import { MoreHorizontal, Shield, Trash, UserCheck } from "lucide-react";
+import { MoreHorizontal, Shield, Trash, UserCheck, UserRound } from "lucide-react";
 
 import { toast } from "sonner";
 import { Label } from "~/lib/components/ui/label";
@@ -50,6 +57,7 @@ function useDialogState() {
     role: false,
     edit: false,
     delete: false,
+    impersonate: false,
   });
 
   const openDialog = (type: keyof typeof dialogStates) => {
@@ -74,7 +82,11 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
   return (
     <Dialog
       open={
-        dialogStates.ban || dialogStates.edit || dialogStates.delete || dialogStates.role
+        dialogStates.ban ||
+        dialogStates.edit ||
+        dialogStates.delete ||
+        dialogStates.role ||
+        dialogStates.impersonate
       }
       onOpenChange={(open) => {
         if (!open) {
@@ -84,8 +96,10 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
             closeDialog("edit");
           } else if (dialogStates.role) {
             closeDialog("role");
-          } else {
+          } else if (dialogStates.delete) {
             closeDialog("delete");
+          } else if (dialogStates.impersonate) {
+            closeDialog("impersonate");
           }
         }
       }}
@@ -106,6 +120,10 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
           {/* <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
               <Pencil /> <span>Modifier</span>
             </DropdownMenuItem> */}
+
+          <DropdownMenuItem onClick={() => openDialog("impersonate")}>
+            <UserRound /> <span>Impersoner</span>
+          </DropdownMenuItem>
 
           <DropdownMenuItem onClick={() => openDialog("role")}>
             <UserCheck /> <span>Modifier le rôle</span>
@@ -176,7 +194,7 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
                   <Label htmlFor="banReason">Raison du bannissement</Label>
 
                   <Select name="banReason">
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full shadow-none" autoFocus>
                       <SelectValue placeholder="Sélectionner une raison" />
                     </SelectTrigger>
 
@@ -191,17 +209,29 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="banExpiresIn">Date d'expiration</Label>
 
-                  <Input id="banExpiresIn" name="banExpiresIn" type="date" />
+                  <Input
+                    id="banExpiresIn"
+                    name="banExpiresIn"
+                    type="date"
+                    className="shadow-none"
+                  />
                 </div>
               </div>
             )}
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Annuler</Button>
+                <Button variant="outline" className="shadow-none" disabled={isLoading}>
+                  Annuler
+                </Button>
               </DialogClose>
 
-              <Button variant="destructive" disabled={isLoading}>
+              <Button
+                type="submit"
+                variant="destructive"
+                disabled={isLoading}
+                className="cursor-pointer"
+              >
                 {isLoading ? "Action en cours..." : user.banned ? "Débannir" : "Bannir"}
               </Button>
             </DialogFooter>
@@ -245,7 +275,7 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
               <Label htmlFor="role">Rôle</Label>
 
               <Select name="role" defaultValue={user.role}>
-                <SelectTrigger id="role" className="w-full">
+                <SelectTrigger id="role" className="w-full shadow-none" autoFocus>
                   <SelectValue placeholder="Sélectionner un rôle" />
                 </SelectTrigger>
 
@@ -258,10 +288,17 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Annuler</Button>
+                <Button variant="outline" className="shadow-none" disabled={isLoading}>
+                  Annuler
+                </Button>
               </DialogClose>
 
-              <Button variant="default" disabled={isLoading}>
+              <Button
+                type="submit"
+                variant="secondary"
+                disabled={isLoading}
+                className="cursor-pointer"
+              >
                 {isLoading ? "Modification en cours..." : "Modifier"}
               </Button>
             </DialogFooter>
@@ -305,14 +342,21 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
               <div className="flex flex-col gap-2">
                 <Label htmlFor="name">Nom</Label>
 
-                <Input id="name" name="name" type="text" defaultValue={user.name} />
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  defaultValue={user.name}
+                  className="shadow-none"
+                  autoFocus
+                />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label htmlFor="role">Rôle</Label>
 
                 <Select name="role" defaultValue={user.role}>
-                  <SelectTrigger id="role" className="w-full">
+                  <SelectTrigger id="role" className="w-full shadow-none">
                     <SelectValue placeholder="Sélectionner un rôle" />
                   </SelectTrigger>
 
@@ -326,10 +370,17 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Annuler</Button>
+                <Button variant="outline" className="shadow-none" disabled={isLoading}>
+                  Annuler
+                </Button>
               </DialogClose>
 
-              <Button variant="default" disabled={isLoading}>
+              <Button
+                type="submit"
+                variant="secondary"
+                disabled={isLoading}
+                className="cursor-pointer"
+              >
                 {isLoading ? "Modification en cours..." : "Modifier"}
               </Button>
             </DialogFooter>
@@ -372,11 +423,73 @@ export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Annuler</Button>
+                <Button variant="outline" className="shadow-none" disabled={isLoading}>
+                  Annuler
+                </Button>
               </DialogClose>
 
-              <Button variant="destructive" disabled={isLoading}>
+              <Button
+                type="submit"
+                variant="destructive"
+                disabled={isLoading}
+                className="cursor-pointer"
+              >
                 {isLoading ? "Suppression en cours..." : "Supprimer"}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
+
+        {dialogStates.impersonate && (
+          <form
+            className="grid gap-y-6"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.target as HTMLFormElement);
+
+              const userId = formData.get("userId") as string;
+
+              setIsLoading(true);
+
+              try {
+                await impersonateUser({ data: { userId } })
+                  .then(() => {
+                    closeDialog("impersonate");
+
+                    router.invalidate();
+                    toast.success("Utilisateur supprimé avec succès");
+                  })
+                  .catch((error) => handleApiError(error));
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle>Impersoner</DialogTitle>
+
+              <DialogDescription>
+                Êtes-vous sûr de vouloir impersoner l'utilisateur{" "}
+                <strong>{user.name}</strong> ?
+              </DialogDescription>
+            </DialogHeader>
+
+            <input type="hidden" name="userId" value={user.id} />
+
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline" className="shadow-none" disabled={isLoading}>
+                  Annuler
+                </Button>
+              </DialogClose>
+
+              <Button
+                type="submit"
+                variant="secondary"
+                disabled={isLoading}
+                className="cursor-pointer"
+              >
+                {isLoading ? "Impersonation en cours..." : "Impersoner"}
               </Button>
             </DialogFooter>
           </form>

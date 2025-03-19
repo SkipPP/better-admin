@@ -55,6 +55,7 @@ function RouteComponent() {
 
         <Button
           variant="secondary"
+          className="cursor-pointer"
           onClick={async () => {
             await revokeAllUserSessions({ data: { userId: user.id } })
               .then(() => {
