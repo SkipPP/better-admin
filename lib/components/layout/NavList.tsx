@@ -33,7 +33,7 @@ export function NavList({
                 activeProps={{
                   className: "bg-muted",
                 }}
-                activeOptions={{ exact: true }}
+                activeOptions={{ exact: true, includeSearch: false }}
               >
                 <item.icon />
 

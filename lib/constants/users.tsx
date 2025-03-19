@@ -80,6 +80,7 @@ export const columns: ColumnDef<UserWithRole>[] = [
             to="/dashboard/users/$userId"
             params={{ userId: row.original.id }}
             search={{
+              limit: 10,
               username: row.original.name,
             }}
             className="font-medium hover:underline"
