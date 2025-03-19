@@ -14,7 +14,7 @@ interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   title?: string;
   search?: boolean;
-  filters: {
+  filters?: {
     name: string;
     title: string;
     options: {
@@ -49,18 +49,19 @@ export function DataTableToolbar<TData>({
           />
         )}
 
-        {filters.map((filter) => {
-          return (
-            table.getColumn(filter.name) && (
-              <DataTableFacetedFilter
-                key={filter.name}
-                title={filter.title}
-                column={table.getColumn(filter.name)}
-                options={filter.options}
-              />
-            )
-          );
-        })}
+        {filters &&
+          filters.map((filter) => {
+            return (
+              table.getColumn(filter.name) && (
+                <DataTableFacetedFilter
+                  key={filter.name}
+                  title={filter.title}
+                  column={table.getColumn(filter.name)}
+                  options={filter.options}
+                />
+              )
+            );
+          })}
 
         {isFiltered && (
           <Button

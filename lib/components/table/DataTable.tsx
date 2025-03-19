@@ -38,7 +38,7 @@ interface DataTableProps<TData, TValue> {
 
   title?: string;
   search?: boolean;
-  filters: {
+  filters?: {
     name: string;
     title: string;
     options: {
