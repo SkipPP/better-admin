@@ -45,10 +45,16 @@ function RouteComponent() {
   return (
     <div className="relative space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Sessions</h1>
+        <div className="flex flex-col items-start">
+          <h1 className="text-2xl font-bold">Sessions</h1>
+
+          <div className="text-muted-foreground text-sm">
+            Liste des sessions de l'utilisateur avec actions disponibles.
+          </div>
+        </div>
 
         <Button
-          size="sm"
+          variant="secondary"
           onClick={async () => {
             await revokeAllUserSessions({ data: { userId: user.id } })
               .then(() => {
@@ -63,7 +69,7 @@ function RouteComponent() {
               });
           }}
         >
-          <Trash className="mr-1 h-4 w-4" /> Révoquer toutes les sessions
+          <Trash className="mr-1 h-4 w-4" /> Révoquer les sessions
         </Button>
       </div>
 

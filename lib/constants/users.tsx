@@ -3,9 +3,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { UserWithRole } from "better-auth/plugins/admin";
 
 import { Badge } from "~/lib/components/ui/badge";
+import { DataTableRowUsersActions } from "~/lib/components/RowUsersActions";
 import { Avatar, AvatarFallback, AvatarImage } from "~/lib/components/ui/avatar";
 import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
-import { DataTableRowUsersActions } from "~/lib/components/table/DataTableRowUsersActions";
 
 import {
   UserCheck,

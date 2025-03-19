@@ -24,7 +24,9 @@ export const fetchUsers = createServerFn({ method: "GET" })
 
       return { users: data.users, total: data.total };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la récupération des utilisateurs");
     }
@@ -66,9 +68,11 @@ export const createUser = createServerFn({ method: "POST" })
 
       return { user: data.user };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
-      throw new Error("Erreur lors de la création de l'utilisateur");
+      throw new Error("Erreur inconnue lors de la création de l'utilisateur");
     }
   });
 
@@ -90,7 +94,9 @@ export const readUser = createServerFn({ method: "GET" })
 
       return { user: data.users[0], total: 1 };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la récupération de l'utilisateur");
     }
@@ -137,7 +143,9 @@ export const updateUser = createServerFn({ method: "POST" })
 
       return { status: data.status };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la mise à jour de l'utilisateur");
     }
@@ -174,7 +182,9 @@ export const deleteUser = createServerFn({ response: "full" })
 
       return { success: data.success };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la suppression de l'utilisateur");
     }
@@ -231,7 +241,9 @@ export const banUser = createServerFn({ method: "POST" })
 
       return { user: data.user };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la bannissement de l'utilisateur");
     }
@@ -271,7 +283,9 @@ export const unbanUser = createServerFn({ method: "POST" })
 
       return { user: data.user };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la débannissement de l'utilisateur");
     }
@@ -313,7 +327,9 @@ export const setUserRole = createServerFn({ method: "POST" })
 
       return { user: data.user };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la modification du rôle de l'utilisateur");
     }
@@ -339,7 +355,9 @@ export const listUserSessions = createServerFn({ method: "GET" })
 
       return { sessions: data.sessions, total: data.sessions.length };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la récupération des sessions de l'utilisateur");
     }
@@ -360,7 +378,9 @@ export const revokeAllUserSessions = createServerFn({ method: "POST" })
 
       return { success: data.success };
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.message) {
+        throw new Error(error.message);
+      }
 
       throw new Error("Erreur lors de la révocation des sessions de l'utilisateur");
     }

@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { Link, useRouter } from "@tanstack/react-router";
 
-import { User } from "~/lib/server/auth";
+import { User } from "~/server/auth";
 import authClient from "~/lib/utils/auth-client";
 
 import { Command, User as UserIcon, UserPlus } from "lucide-react";
@@ -26,6 +26,7 @@ const data = [
     url: "/dashboard/users",
     search: {
       limit: 10,
+      currentPage: 0,
     },
     icon: UserIcon,
   },

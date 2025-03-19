@@ -1,6 +1,4 @@
-"use no memo";
-
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 
 import { UserWithRole } from "better-auth/plugins/admin";
@@ -40,26 +38,57 @@ type DataTableRowUsersActionsProps = {
   user: UserWithRole;
 };
 
-export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps) {
+const handleApiError = (error: Error) => {
+  toast.error("Une erreur est survenue :", {
+    description: error.message,
+  });
+};
+
+function useDialogState() {
+  const [dialogStates, setDialogStates] = useState({
+    ban: false,
+    role: false,
+    edit: false,
+    delete: false,
+  });
+
+  const openDialog = (type: keyof typeof dialogStates) => {
+    setDialogStates((prev) => ({ ...prev, [type]: true }));
+  };
+
+  const closeDialog = (type: keyof typeof dialogStates) => {
+    setDialogStates((prev) => ({ ...prev, [type]: false }));
+  };
+
+  return { dialogStates, openDialog, closeDialog };
+}
+
+export const DataTableRowUsersActions = memo(function DataTableRowUsersActions({
+  user,
+}: DataTableRowUsersActionsProps) {
   const router = useRouter();
 
-  const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
-  const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { dialogStates, openDialog, closeDialog } = useDialogState();
 
   return (
     <Dialog
-      open={isBanDialogOpen || isEditDialogOpen || isDeleteDialogOpen || isRoleDialogOpen}
-      onOpenChange={
-        isBanDialogOpen
-          ? setIsBanDialogOpen
-          : isEditDialogOpen
-            ? setIsEditDialogOpen
-            : isRoleDialogOpen
-              ? setIsRoleDialogOpen
-              : setIsDeleteDialogOpen
+      open={
+        dialogStates.ban || dialogStates.edit || dialogStates.delete || dialogStates.role
       }
+      onOpenChange={(open) => {
+        if (!open) {
+          if (dialogStates.ban) {
+            closeDialog("ban");
+          } else if (dialogStates.edit) {
+            closeDialog("edit");
+          } else if (dialogStates.role) {
+            closeDialog("role");
+          } else {
+            closeDialog("delete");
+          }
+        }
+      }}
     >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -70,63 +99,58 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuItem onClick={() => setIsBanDialogOpen(true)}>
+          <DropdownMenuItem onClick={() => openDialog("ban")}>
             <Shield /> <span>Bannir</span>
           </DropdownMenuItem>
 
           {/* <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-            <Pencil /> <span>Modifier</span>
-          </DropdownMenuItem> */}
+              <Pencil /> <span>Modifier</span>
+            </DropdownMenuItem> */}
 
-          <DropdownMenuItem onClick={() => setIsRoleDialogOpen(true)}>
+          <DropdownMenuItem onClick={() => openDialog("role")}>
             <UserCheck /> <span>Modifier le rôle</span>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
+          <DropdownMenuItem variant="destructive" onClick={() => openDialog("delete")}>
             <Trash /> <span>Supprimer</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <DialogContent>
-        {isBanDialogOpen && (
+        {dialogStates.ban && (
           <form
             className="grid gap-y-6"
             onSubmit={async (event) => {
               event.preventDefault();
               const formData = new FormData(event.target as HTMLFormElement);
 
-              if (user.banned) {
-                await unbanUser({ data: formData })
-                  .then(() => {
-                    setIsBanDialogOpen(false);
+              setIsLoading(true);
 
-                    router.invalidate();
-                    toast.success("Utilisateur débanni avec succès");
-                  })
-                  .catch((error) => {
-                    toast.error("Une erreur est survenue :", {
-                      description: error.message,
-                    });
-                  });
-              } else {
-                await banUser({ data: formData })
-                  .then(() => {
-                    setIsBanDialogOpen(false);
+              try {
+                if (user.banned) {
+                  await unbanUser({ data: formData })
+                    .then(() => {
+                      closeDialog("ban");
 
-                    router.invalidate();
-                    toast.success("Utilisateur banni avec succès");
-                  })
-                  .catch((error) => {
-                    toast.error("Une erreur est survenue :", {
-                      description: error.message,
-                    });
-                  });
+                      router.invalidate();
+                      toast.success("Utilisateur débanni avec succès");
+                    })
+                    .catch((error) => handleApiError(error));
+                } else {
+                  await banUser({ data: formData })
+                    .then(() => {
+                      closeDialog("ban");
+
+                      router.invalidate();
+                      toast.success("Utilisateur banni avec succès");
+                    })
+                    .catch((error) => handleApiError(error));
+                }
+              } finally {
+                setIsLoading(false);
               }
             }}
           >
@@ -177,30 +201,34 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
                 <Button variant="outline">Annuler</Button>
               </DialogClose>
 
-              <Button variant="destructive">{user.banned ? "Débannir" : "Bannir"}</Button>
+              <Button variant="destructive" disabled={isLoading}>
+                {isLoading ? "Action en cours..." : user.banned ? "Débannir" : "Bannir"}
+              </Button>
             </DialogFooter>
           </form>
         )}
 
-        {isRoleDialogOpen && (
+        {dialogStates.role && (
           <form
             className="grid gap-y-6"
             onSubmit={async (event) => {
               event.preventDefault();
               const formData = new FormData(event.target as HTMLFormElement);
 
-              await setUserRole({ data: formData })
-                .then(() => {
-                  setIsRoleDialogOpen(false);
+              setIsLoading(true);
 
-                  router.invalidate();
-                  toast.success("Rôle modifié avec succès");
-                })
-                .catch((error) => {
-                  toast.error("Une erreur est survenue :", {
-                    description: error.message,
-                  });
-                });
+              try {
+                await setUserRole({ data: formData })
+                  .then(() => {
+                    closeDialog("role");
+
+                    router.invalidate();
+                    toast.success("Rôle modifié avec succès");
+                  })
+                  .catch((error) => handleApiError(error));
+              } finally {
+                setIsLoading(false);
+              }
             }}
           >
             <DialogHeader>
@@ -233,30 +261,34 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
                 <Button variant="outline">Annuler</Button>
               </DialogClose>
 
-              <Button variant="default">Modifier</Button>
+              <Button variant="default" disabled={isLoading}>
+                {isLoading ? "Modification en cours..." : "Modifier"}
+              </Button>
             </DialogFooter>
           </form>
         )}
 
-        {isEditDialogOpen && (
+        {dialogStates.edit && (
           <form
             className="grid gap-y-6"
             onSubmit={async (event) => {
               event.preventDefault();
               const formData = new FormData(event.target as HTMLFormElement);
 
-              await updateUser({ data: formData })
-                .then(() => {
-                  setIsEditDialogOpen(false);
+              setIsLoading(true);
 
-                  router.invalidate();
-                  toast.success("Utilisateur modifié avec succès");
-                })
-                .catch((error) => {
-                  toast.error("Une erreur est survenue :", {
-                    description: error.message,
-                  });
-                });
+              try {
+                await updateUser({ data: formData })
+                  .then(() => {
+                    closeDialog("edit");
+
+                    router.invalidate();
+                    toast.success("Utilisateur modifié avec succès");
+                  })
+                  .catch((error) => handleApiError(error));
+              } finally {
+                setIsLoading(false);
+              }
             }}
           >
             <DialogHeader>
@@ -297,30 +329,34 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
                 <Button variant="outline">Annuler</Button>
               </DialogClose>
 
-              <Button variant="default">Modifier</Button>
+              <Button variant="default" disabled={isLoading}>
+                {isLoading ? "Modification en cours..." : "Modifier"}
+              </Button>
             </DialogFooter>
           </form>
         )}
 
-        {isDeleteDialogOpen && (
+        {dialogStates.delete && (
           <form
             className="grid gap-y-6"
             onSubmit={async (event) => {
               event.preventDefault();
               const formData = new FormData(event.target as HTMLFormElement);
 
-              await deleteUser({ data: formData })
-                .then(() => {
-                  setIsDeleteDialogOpen(false);
+              setIsLoading(true);
 
-                  router.invalidate();
-                  toast.success("Utilisateur supprimé avec succès");
-                })
-                .catch((error) => {
-                  toast.error("Une erreur est survenue :", {
-                    description: error.message,
-                  });
-                });
+              try {
+                await deleteUser({ data: formData })
+                  .then(() => {
+                    closeDialog("delete");
+
+                    router.invalidate();
+                    toast.success("Utilisateur supprimé avec succès");
+                  })
+                  .catch((error) => handleApiError(error));
+              } finally {
+                setIsLoading(false);
+              }
             }}
           >
             <DialogHeader>
@@ -339,11 +375,13 @@ export function DataTableRowUsersActions({ user }: DataTableRowUsersActionsProps
                 <Button variant="outline">Annuler</Button>
               </DialogClose>
 
-              <Button variant="destructive">Supprimer</Button>
+              <Button variant="destructive" disabled={isLoading}>
+                {isLoading ? "Suppression en cours..." : "Supprimer"}
+              </Button>
             </DialogFooter>
           </form>
         )}
       </DialogContent>
     </Dialog>
   );
-}
+});

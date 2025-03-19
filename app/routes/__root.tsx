@@ -39,8 +39,9 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStarter",
+        title: "rebass",
       },
+      { name: "description", content: "mh ok" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
@@ -56,8 +57,6 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { readonly children: React.ReactNode }) {
-  // const [theme, setTheme] = useState<"light" | "dark">("light");
-
   return (
     // suppress since we're updating the "dark" class in a custom script below
     <html suppressHydrationWarning>

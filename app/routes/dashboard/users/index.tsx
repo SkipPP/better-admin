@@ -33,7 +33,13 @@ function RouteComponent() {
   return (
     <div className="relative space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Utilisateurs</h1>
+        <div className="flex flex-col items-start">
+          <h1 className="text-2xl font-bold">Utilisateurs</h1>
+
+          <div className="text-muted-foreground text-sm">
+            Liste des utilisateurs avec actions disponibles.
+          </div>
+        </div>
 
         <AddUserDialog />
       </div>
