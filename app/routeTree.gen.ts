@@ -17,22 +17,24 @@ import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as authSignupImport } from './routes/(auth)/signup'
 import { Route as authSigninImport } from './routes/(auth)/signin'
-import { Route as DashboardUsersRouteImport } from './routes/dashboard/users/route'
 import { Route as DashboardOrganizationsRouteImport } from './routes/dashboard/organizations/route'
-import { Route as DashboardUsersIndexImport } from './routes/dashboard/users/index'
+import { Route as DashboardAdministrationRouteImport } from './routes/dashboard/administration/route'
 import { Route as DashboardOrganizationsIndexImport } from './routes/dashboard/organizations/index'
-import { Route as DashboardUsersAddRouteImport } from './routes/dashboard/users/add/route'
-import { Route as DashboardUsersUserIdRouteImport } from './routes/dashboard/users/$userId/route'
+import { Route as DashboardAdministrationIndexImport } from './routes/dashboard/administration/index'
 import { Route as DashboardOrganizationsAddRouteImport } from './routes/dashboard/organizations/add/route'
 import { Route as DashboardOrganizationsOrganizationIdRouteImport } from './routes/dashboard/organizations/$organizationId/route'
-import { Route as DashboardUsersAddIndexImport } from './routes/dashboard/users/add/index'
-import { Route as DashboardUsersUserIdIndexImport } from './routes/dashboard/users/$userId/index'
+import { Route as DashboardAdministrationUsersRouteImport } from './routes/dashboard/administration/users/route'
 import { Route as DashboardOrganizationsAddIndexImport } from './routes/dashboard/organizations/add/index'
 import { Route as DashboardOrganizationsOrganizationIdIndexImport } from './routes/dashboard/organizations/$organizationId/index'
-import { Route as DashboardUsersUserIdEditRouteImport } from './routes/dashboard/users/$userId/edit/route'
+import { Route as DashboardAdministrationUsersIndexImport } from './routes/dashboard/administration/users/index'
 import { Route as DashboardOrganizationsOrganizationIdEditRouteImport } from './routes/dashboard/organizations/$organizationId/edit/route'
-import { Route as DashboardUsersUserIdEditIndexImport } from './routes/dashboard/users/$userId/edit/index'
+import { Route as DashboardAdministrationUsersAddRouteImport } from './routes/dashboard/administration/users/add/route'
+import { Route as DashboardAdministrationUsersUserIdRouteImport } from './routes/dashboard/administration/users/$userId/route'
 import { Route as DashboardOrganizationsOrganizationIdEditIndexImport } from './routes/dashboard/organizations/$organizationId/edit/index'
+import { Route as DashboardAdministrationUsersAddIndexImport } from './routes/dashboard/administration/users/add/index'
+import { Route as DashboardAdministrationUsersUserIdIndexImport } from './routes/dashboard/administration/users/$userId/index'
+import { Route as DashboardAdministrationUsersUserIdEditRouteImport } from './routes/dashboard/administration/users/$userId/edit/route'
+import { Route as DashboardAdministrationUsersUserIdEditIndexImport } from './routes/dashboard/administration/users/$userId/edit/index'
 
 // Create/Update Routes
 
@@ -71,12 +73,6 @@ const authSigninRoute = authSigninImport.update({
   getParentRoute: () => authRouteRoute,
 } as any)
 
-const DashboardUsersRouteRoute = DashboardUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-
 const DashboardOrganizationsRouteRoute =
   DashboardOrganizationsRouteImport.update({
     id: '/organizations',
@@ -84,11 +80,12 @@ const DashboardOrganizationsRouteRoute =
     getParentRoute: () => DashboardRouteRoute,
   } as any)
 
-const DashboardUsersIndexRoute = DashboardUsersIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardUsersRouteRoute,
-} as any)
+const DashboardAdministrationRouteRoute =
+  DashboardAdministrationRouteImport.update({
+    id: '/administration',
+    path: '/administration',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
 
 const DashboardOrganizationsIndexRoute =
   DashboardOrganizationsIndexImport.update({
@@ -97,17 +94,12 @@ const DashboardOrganizationsIndexRoute =
     getParentRoute: () => DashboardOrganizationsRouteRoute,
   } as any)
 
-const DashboardUsersAddRouteRoute = DashboardUsersAddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => DashboardUsersRouteRoute,
-} as any)
-
-const DashboardUsersUserIdRouteRoute = DashboardUsersUserIdRouteImport.update({
-  id: '/$userId',
-  path: '/$userId',
-  getParentRoute: () => DashboardUsersRouteRoute,
-} as any)
+const DashboardAdministrationIndexRoute =
+  DashboardAdministrationIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAdministrationRouteRoute,
+  } as any)
 
 const DashboardOrganizationsAddRouteRoute =
   DashboardOrganizationsAddRouteImport.update({
@@ -123,17 +115,12 @@ const DashboardOrganizationsOrganizationIdRouteRoute =
     getParentRoute: () => DashboardOrganizationsRouteRoute,
   } as any)
 
-const DashboardUsersAddIndexRoute = DashboardUsersAddIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardUsersAddRouteRoute,
-} as any)
-
-const DashboardUsersUserIdIndexRoute = DashboardUsersUserIdIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardUsersUserIdRouteRoute,
-} as any)
+const DashboardAdministrationUsersRouteRoute =
+  DashboardAdministrationUsersRouteImport.update({
+    id: '/users',
+    path: '/users',
+    getParentRoute: () => DashboardAdministrationRouteRoute,
+  } as any)
 
 const DashboardOrganizationsAddIndexRoute =
   DashboardOrganizationsAddIndexImport.update({
@@ -149,11 +136,11 @@ const DashboardOrganizationsOrganizationIdIndexRoute =
     getParentRoute: () => DashboardOrganizationsOrganizationIdRouteRoute,
   } as any)
 
-const DashboardUsersUserIdEditRouteRoute =
-  DashboardUsersUserIdEditRouteImport.update({
-    id: '/edit',
-    path: '/edit',
-    getParentRoute: () => DashboardUsersUserIdRouteRoute,
+const DashboardAdministrationUsersIndexRoute =
+  DashboardAdministrationUsersIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAdministrationUsersRouteRoute,
   } as any)
 
 const DashboardOrganizationsOrganizationIdEditRouteRoute =
@@ -163,11 +150,18 @@ const DashboardOrganizationsOrganizationIdEditRouteRoute =
     getParentRoute: () => DashboardOrganizationsOrganizationIdRouteRoute,
   } as any)
 
-const DashboardUsersUserIdEditIndexRoute =
-  DashboardUsersUserIdEditIndexImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => DashboardUsersUserIdEditRouteRoute,
+const DashboardAdministrationUsersAddRouteRoute =
+  DashboardAdministrationUsersAddRouteImport.update({
+    id: '/add',
+    path: '/add',
+    getParentRoute: () => DashboardAdministrationUsersRouteRoute,
+  } as any)
+
+const DashboardAdministrationUsersUserIdRouteRoute =
+  DashboardAdministrationUsersUserIdRouteImport.update({
+    id: '/$userId',
+    path: '/$userId',
+    getParentRoute: () => DashboardAdministrationUsersRouteRoute,
   } as any)
 
 const DashboardOrganizationsOrganizationIdEditIndexRoute =
@@ -175,6 +169,34 @@ const DashboardOrganizationsOrganizationIdEditIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => DashboardOrganizationsOrganizationIdEditRouteRoute,
+  } as any)
+
+const DashboardAdministrationUsersAddIndexRoute =
+  DashboardAdministrationUsersAddIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAdministrationUsersAddRouteRoute,
+  } as any)
+
+const DashboardAdministrationUsersUserIdIndexRoute =
+  DashboardAdministrationUsersUserIdIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAdministrationUsersUserIdRouteRoute,
+  } as any)
+
+const DashboardAdministrationUsersUserIdEditRouteRoute =
+  DashboardAdministrationUsersUserIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => DashboardAdministrationUsersUserIdRouteRoute,
+  } as any)
+
+const DashboardAdministrationUsersUserIdEditIndexRoute =
+  DashboardAdministrationUsersUserIdEditIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAdministrationUsersUserIdEditRouteRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
@@ -202,18 +224,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/administration': {
+      id: '/dashboard/administration'
+      path: '/administration'
+      fullPath: '/dashboard/administration'
+      preLoaderRoute: typeof DashboardAdministrationRouteImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/dashboard/organizations': {
       id: '/dashboard/organizations'
       path: '/organizations'
       fullPath: '/dashboard/organizations'
       preLoaderRoute: typeof DashboardOrganizationsRouteImport
-      parentRoute: typeof DashboardRouteImport
-    }
-    '/dashboard/users': {
-      id: '/dashboard/users'
-      path: '/users'
-      fullPath: '/dashboard/users'
-      preLoaderRoute: typeof DashboardUsersRouteImport
       parentRoute: typeof DashboardRouteImport
     }
     '/(auth)/signin': {
@@ -237,6 +259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/dashboard/administration/users': {
+      id: '/dashboard/administration/users'
+      path: '/users'
+      fullPath: '/dashboard/administration/users'
+      preLoaderRoute: typeof DashboardAdministrationUsersRouteImport
+      parentRoute: typeof DashboardAdministrationRouteImport
+    }
     '/dashboard/organizations/$organizationId': {
       id: '/dashboard/organizations/$organizationId'
       path: '/$organizationId'
@@ -251,19 +280,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganizationsAddRouteImport
       parentRoute: typeof DashboardOrganizationsRouteImport
     }
-    '/dashboard/users/$userId': {
-      id: '/dashboard/users/$userId'
-      path: '/$userId'
-      fullPath: '/dashboard/users/$userId'
-      preLoaderRoute: typeof DashboardUsersUserIdRouteImport
-      parentRoute: typeof DashboardUsersRouteImport
-    }
-    '/dashboard/users/add': {
-      id: '/dashboard/users/add'
-      path: '/add'
-      fullPath: '/dashboard/users/add'
-      preLoaderRoute: typeof DashboardUsersAddRouteImport
-      parentRoute: typeof DashboardUsersRouteImport
+    '/dashboard/administration/': {
+      id: '/dashboard/administration/'
+      path: '/'
+      fullPath: '/dashboard/administration/'
+      preLoaderRoute: typeof DashboardAdministrationIndexImport
+      parentRoute: typeof DashboardAdministrationRouteImport
     }
     '/dashboard/organizations/': {
       id: '/dashboard/organizations/'
@@ -272,12 +294,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganizationsIndexImport
       parentRoute: typeof DashboardOrganizationsRouteImport
     }
-    '/dashboard/users/': {
-      id: '/dashboard/users/'
-      path: '/'
-      fullPath: '/dashboard/users/'
-      preLoaderRoute: typeof DashboardUsersIndexImport
-      parentRoute: typeof DashboardUsersRouteImport
+    '/dashboard/administration/users/$userId': {
+      id: '/dashboard/administration/users/$userId'
+      path: '/$userId'
+      fullPath: '/dashboard/administration/users/$userId'
+      preLoaderRoute: typeof DashboardAdministrationUsersUserIdRouteImport
+      parentRoute: typeof DashboardAdministrationUsersRouteImport
+    }
+    '/dashboard/administration/users/add': {
+      id: '/dashboard/administration/users/add'
+      path: '/add'
+      fullPath: '/dashboard/administration/users/add'
+      preLoaderRoute: typeof DashboardAdministrationUsersAddRouteImport
+      parentRoute: typeof DashboardAdministrationUsersRouteImport
     }
     '/dashboard/organizations/$organizationId/edit': {
       id: '/dashboard/organizations/$organizationId/edit'
@@ -286,12 +315,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganizationsOrganizationIdEditRouteImport
       parentRoute: typeof DashboardOrganizationsOrganizationIdRouteImport
     }
-    '/dashboard/users/$userId/edit': {
-      id: '/dashboard/users/$userId/edit'
-      path: '/edit'
-      fullPath: '/dashboard/users/$userId/edit'
-      preLoaderRoute: typeof DashboardUsersUserIdEditRouteImport
-      parentRoute: typeof DashboardUsersUserIdRouteImport
+    '/dashboard/administration/users/': {
+      id: '/dashboard/administration/users/'
+      path: '/'
+      fullPath: '/dashboard/administration/users/'
+      preLoaderRoute: typeof DashboardAdministrationUsersIndexImport
+      parentRoute: typeof DashboardAdministrationUsersRouteImport
     }
     '/dashboard/organizations/$organizationId/': {
       id: '/dashboard/organizations/$organizationId/'
@@ -307,19 +336,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganizationsAddIndexImport
       parentRoute: typeof DashboardOrganizationsAddRouteImport
     }
-    '/dashboard/users/$userId/': {
-      id: '/dashboard/users/$userId/'
-      path: '/'
-      fullPath: '/dashboard/users/$userId/'
-      preLoaderRoute: typeof DashboardUsersUserIdIndexImport
-      parentRoute: typeof DashboardUsersUserIdRouteImport
+    '/dashboard/administration/users/$userId/edit': {
+      id: '/dashboard/administration/users/$userId/edit'
+      path: '/edit'
+      fullPath: '/dashboard/administration/users/$userId/edit'
+      preLoaderRoute: typeof DashboardAdministrationUsersUserIdEditRouteImport
+      parentRoute: typeof DashboardAdministrationUsersUserIdRouteImport
     }
-    '/dashboard/users/add/': {
-      id: '/dashboard/users/add/'
+    '/dashboard/administration/users/$userId/': {
+      id: '/dashboard/administration/users/$userId/'
       path: '/'
-      fullPath: '/dashboard/users/add/'
-      preLoaderRoute: typeof DashboardUsersAddIndexImport
-      parentRoute: typeof DashboardUsersAddRouteImport
+      fullPath: '/dashboard/administration/users/$userId/'
+      preLoaderRoute: typeof DashboardAdministrationUsersUserIdIndexImport
+      parentRoute: typeof DashboardAdministrationUsersUserIdRouteImport
+    }
+    '/dashboard/administration/users/add/': {
+      id: '/dashboard/administration/users/add/'
+      path: '/'
+      fullPath: '/dashboard/administration/users/add/'
+      preLoaderRoute: typeof DashboardAdministrationUsersAddIndexImport
+      parentRoute: typeof DashboardAdministrationUsersAddRouteImport
     }
     '/dashboard/organizations/$organizationId/edit/': {
       id: '/dashboard/organizations/$organizationId/edit/'
@@ -328,12 +364,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganizationsOrganizationIdEditIndexImport
       parentRoute: typeof DashboardOrganizationsOrganizationIdEditRouteImport
     }
-    '/dashboard/users/$userId/edit/': {
-      id: '/dashboard/users/$userId/edit/'
+    '/dashboard/administration/users/$userId/edit/': {
+      id: '/dashboard/administration/users/$userId/edit/'
       path: '/'
-      fullPath: '/dashboard/users/$userId/edit/'
-      preLoaderRoute: typeof DashboardUsersUserIdEditIndexImport
-      parentRoute: typeof DashboardUsersUserIdEditRouteImport
+      fullPath: '/dashboard/administration/users/$userId/edit/'
+      preLoaderRoute: typeof DashboardAdministrationUsersUserIdEditIndexImport
+      parentRoute: typeof DashboardAdministrationUsersUserIdEditRouteImport
     }
   }
 }
@@ -353,6 +389,92 @@ const authRouteRouteChildren: authRouteRouteChildren = {
 const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
   authRouteRouteChildren,
 )
+
+interface DashboardAdministrationUsersUserIdEditRouteRouteChildren {
+  DashboardAdministrationUsersUserIdEditIndexRoute: typeof DashboardAdministrationUsersUserIdEditIndexRoute
+}
+
+const DashboardAdministrationUsersUserIdEditRouteRouteChildren: DashboardAdministrationUsersUserIdEditRouteRouteChildren =
+  {
+    DashboardAdministrationUsersUserIdEditIndexRoute:
+      DashboardAdministrationUsersUserIdEditIndexRoute,
+  }
+
+const DashboardAdministrationUsersUserIdEditRouteRouteWithChildren =
+  DashboardAdministrationUsersUserIdEditRouteRoute._addFileChildren(
+    DashboardAdministrationUsersUserIdEditRouteRouteChildren,
+  )
+
+interface DashboardAdministrationUsersUserIdRouteRouteChildren {
+  DashboardAdministrationUsersUserIdEditRouteRoute: typeof DashboardAdministrationUsersUserIdEditRouteRouteWithChildren
+  DashboardAdministrationUsersUserIdIndexRoute: typeof DashboardAdministrationUsersUserIdIndexRoute
+}
+
+const DashboardAdministrationUsersUserIdRouteRouteChildren: DashboardAdministrationUsersUserIdRouteRouteChildren =
+  {
+    DashboardAdministrationUsersUserIdEditRouteRoute:
+      DashboardAdministrationUsersUserIdEditRouteRouteWithChildren,
+    DashboardAdministrationUsersUserIdIndexRoute:
+      DashboardAdministrationUsersUserIdIndexRoute,
+  }
+
+const DashboardAdministrationUsersUserIdRouteRouteWithChildren =
+  DashboardAdministrationUsersUserIdRouteRoute._addFileChildren(
+    DashboardAdministrationUsersUserIdRouteRouteChildren,
+  )
+
+interface DashboardAdministrationUsersAddRouteRouteChildren {
+  DashboardAdministrationUsersAddIndexRoute: typeof DashboardAdministrationUsersAddIndexRoute
+}
+
+const DashboardAdministrationUsersAddRouteRouteChildren: DashboardAdministrationUsersAddRouteRouteChildren =
+  {
+    DashboardAdministrationUsersAddIndexRoute:
+      DashboardAdministrationUsersAddIndexRoute,
+  }
+
+const DashboardAdministrationUsersAddRouteRouteWithChildren =
+  DashboardAdministrationUsersAddRouteRoute._addFileChildren(
+    DashboardAdministrationUsersAddRouteRouteChildren,
+  )
+
+interface DashboardAdministrationUsersRouteRouteChildren {
+  DashboardAdministrationUsersUserIdRouteRoute: typeof DashboardAdministrationUsersUserIdRouteRouteWithChildren
+  DashboardAdministrationUsersAddRouteRoute: typeof DashboardAdministrationUsersAddRouteRouteWithChildren
+  DashboardAdministrationUsersIndexRoute: typeof DashboardAdministrationUsersIndexRoute
+}
+
+const DashboardAdministrationUsersRouteRouteChildren: DashboardAdministrationUsersRouteRouteChildren =
+  {
+    DashboardAdministrationUsersUserIdRouteRoute:
+      DashboardAdministrationUsersUserIdRouteRouteWithChildren,
+    DashboardAdministrationUsersAddRouteRoute:
+      DashboardAdministrationUsersAddRouteRouteWithChildren,
+    DashboardAdministrationUsersIndexRoute:
+      DashboardAdministrationUsersIndexRoute,
+  }
+
+const DashboardAdministrationUsersRouteRouteWithChildren =
+  DashboardAdministrationUsersRouteRoute._addFileChildren(
+    DashboardAdministrationUsersRouteRouteChildren,
+  )
+
+interface DashboardAdministrationRouteRouteChildren {
+  DashboardAdministrationUsersRouteRoute: typeof DashboardAdministrationUsersRouteRouteWithChildren
+  DashboardAdministrationIndexRoute: typeof DashboardAdministrationIndexRoute
+}
+
+const DashboardAdministrationRouteRouteChildren: DashboardAdministrationRouteRouteChildren =
+  {
+    DashboardAdministrationUsersRouteRoute:
+      DashboardAdministrationUsersRouteRouteWithChildren,
+    DashboardAdministrationIndexRoute: DashboardAdministrationIndexRoute,
+  }
+
+const DashboardAdministrationRouteRouteWithChildren =
+  DashboardAdministrationRouteRoute._addFileChildren(
+    DashboardAdministrationRouteRouteChildren,
+  )
 
 interface DashboardOrganizationsOrganizationIdEditRouteRouteChildren {
   DashboardOrganizationsOrganizationIdEditIndexRoute: typeof DashboardOrganizationsOrganizationIdEditIndexRoute
@@ -421,76 +543,17 @@ const DashboardOrganizationsRouteRouteWithChildren =
     DashboardOrganizationsRouteRouteChildren,
   )
 
-interface DashboardUsersUserIdEditRouteRouteChildren {
-  DashboardUsersUserIdEditIndexRoute: typeof DashboardUsersUserIdEditIndexRoute
-}
-
-const DashboardUsersUserIdEditRouteRouteChildren: DashboardUsersUserIdEditRouteRouteChildren =
-  {
-    DashboardUsersUserIdEditIndexRoute: DashboardUsersUserIdEditIndexRoute,
-  }
-
-const DashboardUsersUserIdEditRouteRouteWithChildren =
-  DashboardUsersUserIdEditRouteRoute._addFileChildren(
-    DashboardUsersUserIdEditRouteRouteChildren,
-  )
-
-interface DashboardUsersUserIdRouteRouteChildren {
-  DashboardUsersUserIdEditRouteRoute: typeof DashboardUsersUserIdEditRouteRouteWithChildren
-  DashboardUsersUserIdIndexRoute: typeof DashboardUsersUserIdIndexRoute
-}
-
-const DashboardUsersUserIdRouteRouteChildren: DashboardUsersUserIdRouteRouteChildren =
-  {
-    DashboardUsersUserIdEditRouteRoute:
-      DashboardUsersUserIdEditRouteRouteWithChildren,
-    DashboardUsersUserIdIndexRoute: DashboardUsersUserIdIndexRoute,
-  }
-
-const DashboardUsersUserIdRouteRouteWithChildren =
-  DashboardUsersUserIdRouteRoute._addFileChildren(
-    DashboardUsersUserIdRouteRouteChildren,
-  )
-
-interface DashboardUsersAddRouteRouteChildren {
-  DashboardUsersAddIndexRoute: typeof DashboardUsersAddIndexRoute
-}
-
-const DashboardUsersAddRouteRouteChildren: DashboardUsersAddRouteRouteChildren =
-  {
-    DashboardUsersAddIndexRoute: DashboardUsersAddIndexRoute,
-  }
-
-const DashboardUsersAddRouteRouteWithChildren =
-  DashboardUsersAddRouteRoute._addFileChildren(
-    DashboardUsersAddRouteRouteChildren,
-  )
-
-interface DashboardUsersRouteRouteChildren {
-  DashboardUsersUserIdRouteRoute: typeof DashboardUsersUserIdRouteRouteWithChildren
-  DashboardUsersAddRouteRoute: typeof DashboardUsersAddRouteRouteWithChildren
-  DashboardUsersIndexRoute: typeof DashboardUsersIndexRoute
-}
-
-const DashboardUsersRouteRouteChildren: DashboardUsersRouteRouteChildren = {
-  DashboardUsersUserIdRouteRoute: DashboardUsersUserIdRouteRouteWithChildren,
-  DashboardUsersAddRouteRoute: DashboardUsersAddRouteRouteWithChildren,
-  DashboardUsersIndexRoute: DashboardUsersIndexRoute,
-}
-
-const DashboardUsersRouteRouteWithChildren =
-  DashboardUsersRouteRoute._addFileChildren(DashboardUsersRouteRouteChildren)
-
 interface DashboardRouteRouteChildren {
+  DashboardAdministrationRouteRoute: typeof DashboardAdministrationRouteRouteWithChildren
   DashboardOrganizationsRouteRoute: typeof DashboardOrganizationsRouteRouteWithChildren
-  DashboardUsersRouteRoute: typeof DashboardUsersRouteRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardAdministrationRouteRoute:
+    DashboardAdministrationRouteRouteWithChildren,
   DashboardOrganizationsRouteRoute:
     DashboardOrganizationsRouteRouteWithChildren,
-  DashboardUsersRouteRoute: DashboardUsersRouteRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -501,25 +564,27 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof authRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/administration': typeof DashboardAdministrationRouteRouteWithChildren
   '/dashboard/organizations': typeof DashboardOrganizationsRouteRouteWithChildren
-  '/dashboard/users': typeof DashboardUsersRouteRouteWithChildren
   '/signin': typeof authSigninRoute
   '/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/administration/users': typeof DashboardAdministrationUsersRouteRouteWithChildren
   '/dashboard/organizations/$organizationId': typeof DashboardOrganizationsOrganizationIdRouteRouteWithChildren
   '/dashboard/organizations/add': typeof DashboardOrganizationsAddRouteRouteWithChildren
-  '/dashboard/users/$userId': typeof DashboardUsersUserIdRouteRouteWithChildren
-  '/dashboard/users/add': typeof DashboardUsersAddRouteRouteWithChildren
+  '/dashboard/administration/': typeof DashboardAdministrationIndexRoute
   '/dashboard/organizations/': typeof DashboardOrganizationsIndexRoute
-  '/dashboard/users/': typeof DashboardUsersIndexRoute
+  '/dashboard/administration/users/$userId': typeof DashboardAdministrationUsersUserIdRouteRouteWithChildren
+  '/dashboard/administration/users/add': typeof DashboardAdministrationUsersAddRouteRouteWithChildren
   '/dashboard/organizations/$organizationId/edit': typeof DashboardOrganizationsOrganizationIdEditRouteRouteWithChildren
-  '/dashboard/users/$userId/edit': typeof DashboardUsersUserIdEditRouteRouteWithChildren
+  '/dashboard/administration/users/': typeof DashboardAdministrationUsersIndexRoute
   '/dashboard/organizations/$organizationId/': typeof DashboardOrganizationsOrganizationIdIndexRoute
   '/dashboard/organizations/add/': typeof DashboardOrganizationsAddIndexRoute
-  '/dashboard/users/$userId/': typeof DashboardUsersUserIdIndexRoute
-  '/dashboard/users/add/': typeof DashboardUsersAddIndexRoute
+  '/dashboard/administration/users/$userId/edit': typeof DashboardAdministrationUsersUserIdEditRouteRouteWithChildren
+  '/dashboard/administration/users/$userId/': typeof DashboardAdministrationUsersUserIdIndexRoute
+  '/dashboard/administration/users/add/': typeof DashboardAdministrationUsersAddIndexRoute
   '/dashboard/organizations/$organizationId/edit/': typeof DashboardOrganizationsOrganizationIdEditIndexRoute
-  '/dashboard/users/$userId/edit/': typeof DashboardUsersUserIdEditIndexRoute
+  '/dashboard/administration/users/$userId/edit/': typeof DashboardAdministrationUsersUserIdEditIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -527,14 +592,15 @@ export interface FileRoutesByTo {
   '/signin': typeof authSigninRoute
   '/signup': typeof authSignupRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/administration': typeof DashboardAdministrationIndexRoute
   '/dashboard/organizations': typeof DashboardOrganizationsIndexRoute
-  '/dashboard/users': typeof DashboardUsersIndexRoute
+  '/dashboard/administration/users': typeof DashboardAdministrationUsersIndexRoute
   '/dashboard/organizations/$organizationId': typeof DashboardOrganizationsOrganizationIdIndexRoute
   '/dashboard/organizations/add': typeof DashboardOrganizationsAddIndexRoute
-  '/dashboard/users/$userId': typeof DashboardUsersUserIdIndexRoute
-  '/dashboard/users/add': typeof DashboardUsersAddIndexRoute
+  '/dashboard/administration/users/$userId': typeof DashboardAdministrationUsersUserIdIndexRoute
+  '/dashboard/administration/users/add': typeof DashboardAdministrationUsersAddIndexRoute
   '/dashboard/organizations/$organizationId/edit': typeof DashboardOrganizationsOrganizationIdEditIndexRoute
-  '/dashboard/users/$userId/edit': typeof DashboardUsersUserIdEditIndexRoute
+  '/dashboard/administration/users/$userId/edit': typeof DashboardAdministrationUsersUserIdEditIndexRoute
 }
 
 export interface FileRoutesById {
@@ -542,25 +608,27 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(auth)': typeof authRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/administration': typeof DashboardAdministrationRouteRouteWithChildren
   '/dashboard/organizations': typeof DashboardOrganizationsRouteRouteWithChildren
-  '/dashboard/users': typeof DashboardUsersRouteRouteWithChildren
   '/(auth)/signin': typeof authSigninRoute
   '/(auth)/signup': typeof authSignupRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/administration/users': typeof DashboardAdministrationUsersRouteRouteWithChildren
   '/dashboard/organizations/$organizationId': typeof DashboardOrganizationsOrganizationIdRouteRouteWithChildren
   '/dashboard/organizations/add': typeof DashboardOrganizationsAddRouteRouteWithChildren
-  '/dashboard/users/$userId': typeof DashboardUsersUserIdRouteRouteWithChildren
-  '/dashboard/users/add': typeof DashboardUsersAddRouteRouteWithChildren
+  '/dashboard/administration/': typeof DashboardAdministrationIndexRoute
   '/dashboard/organizations/': typeof DashboardOrganizationsIndexRoute
-  '/dashboard/users/': typeof DashboardUsersIndexRoute
+  '/dashboard/administration/users/$userId': typeof DashboardAdministrationUsersUserIdRouteRouteWithChildren
+  '/dashboard/administration/users/add': typeof DashboardAdministrationUsersAddRouteRouteWithChildren
   '/dashboard/organizations/$organizationId/edit': typeof DashboardOrganizationsOrganizationIdEditRouteRouteWithChildren
-  '/dashboard/users/$userId/edit': typeof DashboardUsersUserIdEditRouteRouteWithChildren
+  '/dashboard/administration/users/': typeof DashboardAdministrationUsersIndexRoute
   '/dashboard/organizations/$organizationId/': typeof DashboardOrganizationsOrganizationIdIndexRoute
   '/dashboard/organizations/add/': typeof DashboardOrganizationsAddIndexRoute
-  '/dashboard/users/$userId/': typeof DashboardUsersUserIdIndexRoute
-  '/dashboard/users/add/': typeof DashboardUsersAddIndexRoute
+  '/dashboard/administration/users/$userId/edit': typeof DashboardAdministrationUsersUserIdEditRouteRouteWithChildren
+  '/dashboard/administration/users/$userId/': typeof DashboardAdministrationUsersUserIdIndexRoute
+  '/dashboard/administration/users/add/': typeof DashboardAdministrationUsersAddIndexRoute
   '/dashboard/organizations/$organizationId/edit/': typeof DashboardOrganizationsOrganizationIdEditIndexRoute
-  '/dashboard/users/$userId/edit/': typeof DashboardUsersUserIdEditIndexRoute
+  '/dashboard/administration/users/$userId/edit/': typeof DashboardAdministrationUsersUserIdEditIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -568,63 +636,68 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/dashboard/administration'
     | '/dashboard/organizations'
-    | '/dashboard/users'
     | '/signin'
     | '/signup'
     | '/dashboard/'
+    | '/dashboard/administration/users'
     | '/dashboard/organizations/$organizationId'
     | '/dashboard/organizations/add'
-    | '/dashboard/users/$userId'
-    | '/dashboard/users/add'
+    | '/dashboard/administration/'
     | '/dashboard/organizations/'
-    | '/dashboard/users/'
+    | '/dashboard/administration/users/$userId'
+    | '/dashboard/administration/users/add'
     | '/dashboard/organizations/$organizationId/edit'
-    | '/dashboard/users/$userId/edit'
+    | '/dashboard/administration/users/'
     | '/dashboard/organizations/$organizationId/'
     | '/dashboard/organizations/add/'
-    | '/dashboard/users/$userId/'
-    | '/dashboard/users/add/'
+    | '/dashboard/administration/users/$userId/edit'
+    | '/dashboard/administration/users/$userId/'
+    | '/dashboard/administration/users/add/'
     | '/dashboard/organizations/$organizationId/edit/'
-    | '/dashboard/users/$userId/edit/'
+    | '/dashboard/administration/users/$userId/edit/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/signin'
     | '/signup'
     | '/dashboard'
+    | '/dashboard/administration'
     | '/dashboard/organizations'
-    | '/dashboard/users'
+    | '/dashboard/administration/users'
     | '/dashboard/organizations/$organizationId'
     | '/dashboard/organizations/add'
-    | '/dashboard/users/$userId'
-    | '/dashboard/users/add'
+    | '/dashboard/administration/users/$userId'
+    | '/dashboard/administration/users/add'
     | '/dashboard/organizations/$organizationId/edit'
-    | '/dashboard/users/$userId/edit'
+    | '/dashboard/administration/users/$userId/edit'
   id:
     | '__root__'
     | '/'
     | '/(auth)'
     | '/dashboard'
+    | '/dashboard/administration'
     | '/dashboard/organizations'
-    | '/dashboard/users'
     | '/(auth)/signin'
     | '/(auth)/signup'
     | '/dashboard/'
+    | '/dashboard/administration/users'
     | '/dashboard/organizations/$organizationId'
     | '/dashboard/organizations/add'
-    | '/dashboard/users/$userId'
-    | '/dashboard/users/add'
+    | '/dashboard/administration/'
     | '/dashboard/organizations/'
-    | '/dashboard/users/'
+    | '/dashboard/administration/users/$userId'
+    | '/dashboard/administration/users/add'
     | '/dashboard/organizations/$organizationId/edit'
-    | '/dashboard/users/$userId/edit'
+    | '/dashboard/administration/users/'
     | '/dashboard/organizations/$organizationId/'
     | '/dashboard/organizations/add/'
-    | '/dashboard/users/$userId/'
-    | '/dashboard/users/add/'
+    | '/dashboard/administration/users/$userId/edit'
+    | '/dashboard/administration/users/$userId/'
+    | '/dashboard/administration/users/add/'
     | '/dashboard/organizations/$organizationId/edit/'
-    | '/dashboard/users/$userId/edit/'
+    | '/dashboard/administration/users/$userId/edit/'
   fileRoutesById: FileRoutesById
 }
 
@@ -668,9 +741,17 @@ export const routeTree = rootRoute
     "/dashboard": {
       "filePath": "dashboard/route.tsx",
       "children": [
+        "/dashboard/administration",
         "/dashboard/organizations",
-        "/dashboard/users",
         "/dashboard/"
+      ]
+    },
+    "/dashboard/administration": {
+      "filePath": "dashboard/administration/route.tsx",
+      "parent": "/dashboard",
+      "children": [
+        "/dashboard/administration/users",
+        "/dashboard/administration/"
       ]
     },
     "/dashboard/organizations": {
@@ -680,15 +761,6 @@ export const routeTree = rootRoute
         "/dashboard/organizations/$organizationId",
         "/dashboard/organizations/add",
         "/dashboard/organizations/"
-      ]
-    },
-    "/dashboard/users": {
-      "filePath": "dashboard/users/route.tsx",
-      "parent": "/dashboard",
-      "children": [
-        "/dashboard/users/$userId",
-        "/dashboard/users/add",
-        "/dashboard/users/"
       ]
     },
     "/(auth)/signin": {
@@ -702,6 +774,15 @@ export const routeTree = rootRoute
     "/dashboard/": {
       "filePath": "dashboard/index.tsx",
       "parent": "/dashboard"
+    },
+    "/dashboard/administration/users": {
+      "filePath": "dashboard/administration/users/route.tsx",
+      "parent": "/dashboard/administration",
+      "children": [
+        "/dashboard/administration/users/$userId",
+        "/dashboard/administration/users/add",
+        "/dashboard/administration/users/"
+      ]
     },
     "/dashboard/organizations/$organizationId": {
       "filePath": "dashboard/organizations/$organizationId/route.tsx",
@@ -718,28 +799,28 @@ export const routeTree = rootRoute
         "/dashboard/organizations/add/"
       ]
     },
-    "/dashboard/users/$userId": {
-      "filePath": "dashboard/users/$userId/route.tsx",
-      "parent": "/dashboard/users",
-      "children": [
-        "/dashboard/users/$userId/edit",
-        "/dashboard/users/$userId/"
-      ]
-    },
-    "/dashboard/users/add": {
-      "filePath": "dashboard/users/add/route.tsx",
-      "parent": "/dashboard/users",
-      "children": [
-        "/dashboard/users/add/"
-      ]
+    "/dashboard/administration/": {
+      "filePath": "dashboard/administration/index.tsx",
+      "parent": "/dashboard/administration"
     },
     "/dashboard/organizations/": {
       "filePath": "dashboard/organizations/index.tsx",
       "parent": "/dashboard/organizations"
     },
-    "/dashboard/users/": {
-      "filePath": "dashboard/users/index.tsx",
-      "parent": "/dashboard/users"
+    "/dashboard/administration/users/$userId": {
+      "filePath": "dashboard/administration/users/$userId/route.tsx",
+      "parent": "/dashboard/administration/users",
+      "children": [
+        "/dashboard/administration/users/$userId/edit",
+        "/dashboard/administration/users/$userId/"
+      ]
+    },
+    "/dashboard/administration/users/add": {
+      "filePath": "dashboard/administration/users/add/route.tsx",
+      "parent": "/dashboard/administration/users",
+      "children": [
+        "/dashboard/administration/users/add/"
+      ]
     },
     "/dashboard/organizations/$organizationId/edit": {
       "filePath": "dashboard/organizations/$organizationId/edit/route.tsx",
@@ -748,12 +829,9 @@ export const routeTree = rootRoute
         "/dashboard/organizations/$organizationId/edit/"
       ]
     },
-    "/dashboard/users/$userId/edit": {
-      "filePath": "dashboard/users/$userId/edit/route.tsx",
-      "parent": "/dashboard/users/$userId",
-      "children": [
-        "/dashboard/users/$userId/edit/"
-      ]
+    "/dashboard/administration/users/": {
+      "filePath": "dashboard/administration/users/index.tsx",
+      "parent": "/dashboard/administration/users"
     },
     "/dashboard/organizations/$organizationId/": {
       "filePath": "dashboard/organizations/$organizationId/index.tsx",
@@ -763,21 +841,28 @@ export const routeTree = rootRoute
       "filePath": "dashboard/organizations/add/index.tsx",
       "parent": "/dashboard/organizations/add"
     },
-    "/dashboard/users/$userId/": {
-      "filePath": "dashboard/users/$userId/index.tsx",
-      "parent": "/dashboard/users/$userId"
+    "/dashboard/administration/users/$userId/edit": {
+      "filePath": "dashboard/administration/users/$userId/edit/route.tsx",
+      "parent": "/dashboard/administration/users/$userId",
+      "children": [
+        "/dashboard/administration/users/$userId/edit/"
+      ]
     },
-    "/dashboard/users/add/": {
-      "filePath": "dashboard/users/add/index.tsx",
-      "parent": "/dashboard/users/add"
+    "/dashboard/administration/users/$userId/": {
+      "filePath": "dashboard/administration/users/$userId/index.tsx",
+      "parent": "/dashboard/administration/users/$userId"
+    },
+    "/dashboard/administration/users/add/": {
+      "filePath": "dashboard/administration/users/add/index.tsx",
+      "parent": "/dashboard/administration/users/add"
     },
     "/dashboard/organizations/$organizationId/edit/": {
       "filePath": "dashboard/organizations/$organizationId/edit/index.tsx",
       "parent": "/dashboard/organizations/$organizationId/edit"
     },
-    "/dashboard/users/$userId/edit/": {
-      "filePath": "dashboard/users/$userId/edit/index.tsx",
-      "parent": "/dashboard/users/$userId/edit"
+    "/dashboard/administration/users/$userId/edit/": {
+      "filePath": "dashboard/administration/users/$userId/edit/index.tsx",
+      "parent": "/dashboard/administration/users/$userId/edit"
     }
   }
 }

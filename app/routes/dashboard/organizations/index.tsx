@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { fetchOrganizations } from "~/server/organizations";
+import { fetchUserOrganizations } from "~/server/organizations";
 
 import { columns } from "~/lib/constants/organizations";
 import { DataTable } from "~/lib/components/table/DataTable";
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/dashboard/organizations/")({
     currentPage: search.currentPage,
   }),
   loader: async ({ deps }) => {
-    const { organizations } = await fetchOrganizations({
+    const { organizations } = await fetchUserOrganizations({
       data: { limit: deps.limit ?? 10, currentPage: deps.currentPage ?? 0 },
     });
 

@@ -77,7 +77,7 @@ export const columns: ColumnDef<UserWithRole>[] = [
         <div className="flex flex-col items-start">
           <Link
             preload="intent"
-            to="/dashboard/users/$userId"
+            to="/dashboard/administration/users/$userId"
             params={{ userId: row.original.id }}
             search={{
               limit: 10,

@@ -1,20 +1,20 @@
 import { z } from "zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { readOrganization } from "~/server/organizations";
 
 import { Button } from "~/lib/components/ui/button";
 
 import { DataTable } from "~/lib/components/table/DataTable";
-import { organizationMembersColumns, filters } from "~/lib/constants/organizations";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/lib/components/ui/tabs";
+import { DataTableRowOrganizationsActions } from "~/lib/components/RowOrganizationsActions";
 import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "~/lib/components/ui/dropdown-menu";
+  filters,
+  organizationTeamsColumns,
+  organizationMembersColumns,
+} from "~/lib/constants/organizations";
 
-import { Edit, Plus } from "lucide-react";
+import { Edit, UserIcon, Users } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/organizations/$organizationId/")({
   component: RouteComponent,
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/dashboard/organizations/$organizationId/"
   }),
   loader: async ({ params }) => {
     const { organization } = await readOrganization({
-      data: { id: params.organizationId },
+      data: { organizationId: params.organizationId },
     });
 
     return { organization };
@@ -36,41 +36,68 @@ export const Route = createFileRoute("/dashboard/organizations/$organizationId/"
 function RouteComponent() {
   const { organization } = Route.useLoaderData();
 
+  const owner = organization?.members.find((member) => member.role === "owner");
+
   return (
     <div className="relative space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-start">
-          <h1 className="text-2xl font-bold">Membres de l'organisation</h1>
+          <h1 className="text-2xl font-bold">{organization?.name}</h1>
 
           <div className="text-muted-foreground text-sm">
-            Liste des membres de l'organisation <strong>{organization?.name}</strong>.
+            Créée le{" "}
+            <p className="inline font-medium">
+              {organization?.createdAt?.toLocaleDateString("fr-FR")}
+            </p>
+            , par{" "}
+            <Link
+              to="/dashboard/administration/users/$userId"
+              params={{ userId: owner?.userId ?? "" }}
+              search={{ limit: 10, currentPage: 0, username: owner?.user.name }}
+              className="text-muted-foreground font-medium hover:underline"
+            >
+              {owner?.user.name}
+            </Link>
+            .
           </div>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="cursor-pointer">
-              <Edit className="mr-1 h-4 w-4" /> Mettre à jour
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem disabled>
-              <Edit className="mr-1 h-4 w-4" /> Modifier
-            </DropdownMenuItem>
-
-            <DropdownMenuItem disabled>
-              <Plus className="mr-1 h-4 w-4" /> Ajouter des utilisateurs
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <DataTableRowOrganizationsActions organization={organization}>
+          <Button variant="secondary" className="cursor-pointer">
+            <Edit className="mr-1 h-4 w-4" /> Mettre à jour
+          </Button>
+        </DataTableRowOrganizationsActions>
       </div>
 
-      <DataTable
-        columns={organizationMembersColumns}
-        data={organization?.members ?? []}
-        filters={filters}
-      />
+      <Tabs defaultValue="members" className="gap-4">
+        <TabsList className="bg-background gap-x-2 border border-dashed">
+          <TabsTrigger value="members" className="cursor-pointer">
+            <UserIcon className="h-4 w-4" /> Membres
+          </TabsTrigger>
+
+          <TabsTrigger value="teams" className="cursor-pointer">
+            <Users className="h-4 w-4" /> Équipes
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="members">
+          <DataTable
+            search={true}
+            columns={organizationMembersColumns(organization)}
+            data={organization?.members ?? []}
+            filters={filters}
+          />
+        </TabsContent>
+
+        <TabsContent value="teams">
+          <DataTable
+            search={true}
+            columns={organizationTeamsColumns}
+            data={organization?.teams ?? []}
+            filters={filters}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

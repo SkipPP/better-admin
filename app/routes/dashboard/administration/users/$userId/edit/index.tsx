@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { readUser } from "~/server/admin";
 
-export const Route = createFileRoute("/dashboard/users/$userId/edit/")({
+export const Route = createFileRoute("/dashboard/administration/users/$userId/edit/")({
   validateSearch: z.object({
     username: z.string(),
   }),

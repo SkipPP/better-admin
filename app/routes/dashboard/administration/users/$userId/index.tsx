@@ -10,7 +10,7 @@ import { DataTable } from "~/lib/components/table/DataTable";
 import { toast } from "sonner";
 import { Trash } from "lucide-react";
 
-export const Route = createFileRoute("/dashboard/users/$userId/")({
+export const Route = createFileRoute("/dashboard/administration/users/$userId/")({
   component: RouteComponent,
   validateSearch: z.object({
     username: z.string().optional(),

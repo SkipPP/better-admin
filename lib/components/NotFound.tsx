@@ -1,20 +1,28 @@
 import { Link } from "@tanstack/react-router";
+
 import { Button } from "./ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export function NotFound() {
   return (
-    <div className="space-y-2">
-      <p>The page you are looking for does not exist.</p>
+    <div className="flex flex-col items-center justify-center">
+      <div className="container flex max-w-md flex-col items-center justify-center gap-6 px-4 text-center">
+        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+          404 - Page not found
+        </h1>
 
-      <p className="flex flex-wrap items-center gap-4">
-        <Button type="button" onClick={() => window.history.back()}>
-          Go back
-        </Button>
+        <p className="text-muted-foreground text-sm md:text-base">
+          Sorry, we couldn't find the page you're looking for. <br />
+          It might have been moved or deleted.
+        </p>
 
-        <Button asChild variant="secondary">
-          <Link to="/">Home</Link>
+        <Button asChild className="gap-2">
+          <Link to="/dashboard">
+            <ArrowLeft className="h-4 w-4" />
+            Back to dashboard
+          </Link>
         </Button>
-      </p>
+      </div>
     </div>
   );
 }

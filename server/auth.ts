@@ -10,7 +10,16 @@ export const auth = betterAuth({
     provider: "pg",
   }),
 
-  plugins: [admin(), organization()],
+  plugins: [
+    admin(),
+    organization({
+      teams: {
+        enabled: true,
+        maximumTeams: 10, // Optional: limit teams per organization
+        allowRemovingAllTeams: false, // Optional: prevent removing the last team
+      },
+    }),
+  ],
 
   // https://www.better-auth.com/docs/concepts/oauth
   socialProviders: {
@@ -28,10 +37,9 @@ export const auth = betterAuth({
     },
   },
 
-  // https://www.better-auth.com/docs/authentication/email-password
-  // emailAndPassword: {
-  //   enabled: true,
-  // },
+  emailAndPassword: {
+    enabled: true,
+  },
 
   advanced: {
     cookies: {
@@ -46,6 +54,7 @@ export type Session = typeof auth.$Infer.Session;
 export type User = Session["user"];
 
 export type Organization = typeof auth.$Infer.Organization;
+export type OrganizationTeam = (typeof auth.$Infer.Organization)["team"];
 export type OrganizationMember = {
   id: string;
   organizationId: string;

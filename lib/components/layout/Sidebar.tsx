@@ -8,7 +8,7 @@ import authClient from "~/lib/utils/auth-client";
 import { Building, Command, Plus, User as UserIcon } from "lucide-react";
 
 import { NavUser } from "~/lib/components/layout/NavUser";
-import { NavList } from "~/lib/components/layout/NavList";
+import { NavMain } from "~/lib/components/layout/NavMain";
 
 import {
   Sidebar,
@@ -21,20 +21,23 @@ import {
 } from "~/lib/components/ui/sidebar";
 
 const data = {
-  users: [
+  admin: [
     {
       name: "Utilisateurs",
-      url: "/dashboard/users",
-      search: {
-        limit: 10,
-        currentPage: 0,
-      },
+      url: "/dashboard/administration/users",
       icon: UserIcon,
+      items: [
+        {
+          name: "Ajouter un utilisateur",
+          url: "/dashboard/administration/users/add",
+          icon: Plus,
+        },
+      ],
     },
     {
-      name: "Ajouter un utilisateur",
-      url: "/dashboard/users/add",
-      icon: Plus,
+      name: "Organisations",
+      url: "/dashboard/administration/organizations",
+      icon: Building,
     },
   ],
   organizations: [
@@ -84,8 +87,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavList title="Gestion des utilisateurs" items={data.users} />
-        <NavList title="Gestions des organizations" items={data.organizations} />
+        {user?.role === "admin" && <NavMain title="Administration" items={data.admin} />}
+
+        <NavMain title="Mes organizations" items={data.organizations} />
       </SidebarContent>
 
       <SidebarFooter>

@@ -8,7 +8,7 @@ import { DataTable } from "~/lib/components/table/DataTable";
 
 import AddUserDialog from "~/lib/components/AddUserDialog";
 
-export const Route = createFileRoute("/dashboard/users/")({
+export const Route = createFileRoute("/dashboard/administration/users/")({
   component: RouteComponent,
   validateSearch: z.object({
     limit: z.number().default(10).optional(),

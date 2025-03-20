@@ -29,7 +29,7 @@ const userSchema = z.object({
   }),
 });
 
-export const Route = createFileRoute("/dashboard/users/add/")({
+export const Route = createFileRoute("/dashboard/administration/users/add/")({
   component: AddUserRoute,
 });
 
@@ -87,7 +87,7 @@ function AddUserRoute() {
         const { user } = await createUser({ data: formData });
 
         router.navigate({
-          to: "/dashboard/users/$userId",
+          to: "/dashboard/administration/users/$userId",
           params: { userId: user.id },
           search: { username: user.name, limit: 10, currentPage: 0 },
         });
@@ -176,7 +176,10 @@ function AddUserRoute() {
               disabled={isSubmitting}
               className="cursor-default shadow-none"
             >
-              <Link to="/dashboard/users" search={{ limit: 10, currentPage: 0 }}>
+              <Link
+                to="/dashboard/administration/users"
+                search={{ limit: 10, currentPage: 0 }}
+              >
                 Annuler
               </Link>
             </Button>

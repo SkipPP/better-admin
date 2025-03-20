@@ -25,7 +25,7 @@ export function createRouter() {
       // react-query will handle data fetching & caching
       // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
       defaultPreloadStaleTime: 0,
-      defaultErrorComponent: DefaultCatchBoundary,
+      defaultErrorComponent: ({ error }) => <DefaultCatchBoundary error={error} />,
       defaultNotFoundComponent: NotFound,
       scrollRestoration: true,
       defaultStructuralSharing: true,

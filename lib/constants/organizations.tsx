@@ -1,12 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
-import { Organization, OrganizationMember } from "~/server/auth";
+import { Organization, OrganizationMember, OrganizationTeam } from "~/server/auth";
 
 import { UserCheck, UserIcon } from "lucide-react";
 
 import { Badge } from "~/lib/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "~/lib/components/ui/avatar";
+
 import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
+import { DataTableRowOrganizationsActions } from "~/lib/components/RowOrganizationsActions";
+import { DataTableRowOrganizationsUsersActions } from "~/lib/components/RowOrganizationsUsersActions";
 
 export const filters = [
   {
@@ -65,7 +68,6 @@ export const columns: ColumnDef<Organization>[] = [
     cell: ({ row }) => {
       return (
         <Link
-          preload="intent"
           to="/dashboard/organizations/$organizationId"
           params={{ organizationId: row.original.id }}
           search={{
@@ -109,11 +111,13 @@ export const columns: ColumnDef<Organization>[] = [
       align: "right",
     },
     header: () => null,
-    cell: () => <span>actions</span>,
+    cell: ({ row }) => <DataTableRowOrganizationsActions organization={row.original} />,
   },
 ];
 
-export const organizationMembersColumns: ColumnDef<OrganizationMember>[] = [
+export const organizationMembersColumns: (
+  organization?: Organization | null,
+) => ColumnDef<OrganizationMember>[] = (organization) => [
   {
     accessorKey: "image",
     accessorFn: (row) => row.user.image,
@@ -147,11 +151,11 @@ export const organizationMembersColumns: ColumnDef<OrganizationMember>[] = [
       return (
         <div className="flex flex-col items-start">
           <Link
-            preload="intent"
-            to="/dashboard/users/$userId"
-            params={{ userId: row.original.id }}
+            to="/dashboard/administration/users/$userId"
+            params={{ userId: row.original.userId }}
             search={{
               limit: 10,
+              currentPage: 0,
               username: row.original.user.name,
             }}
             className="font-medium hover:underline"
@@ -206,6 +210,81 @@ export const organizationMembersColumns: ColumnDef<OrganizationMember>[] = [
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "teamId",
+    accessorFn: (row) => row.teamId,
+    meta: {
+      label: "Équipe",
+    },
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
+    cell: ({ row }) => {
+      if (!row.original.teamId) {
+        return null;
+      }
+
+      return (
+        <Badge variant="secondary">
+          {
+            organization?.teams?.find(
+              (team: OrganizationTeam) => team.id === row.original.teamId,
+            )?.name
+          }
+        </Badge>
+      );
+    },
+  },
+  {
+    id: "actions",
+    meta: {
+      align: "right",
+    },
+    header: () => null,
+    cell: ({ row }) => (
+      <DataTableRowOrganizationsUsersActions organizationMember={row.original} />
+    ),
+  },
+];
+
+export const organizationTeamsColumns: ColumnDef<OrganizationTeam>[] = [
+  {
+    accessorKey: "name",
+    accessorFn: (row) => row.name,
+    meta: {
+      label: "Nom",
+    },
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
+    cell: ({ row }) => {
+      return <span>{row.getValue("name")}</span>;
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    accessorFn: (row) => row.createdAt,
+    meta: {
+      label: "Date de création",
+    },
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
+    cell: ({ row }) => {
+      const createdAt = new Date(row.getValue("createdAt"));
+      const formattedCreatedAt = createdAt?.toLocaleDateString("fr-FR");
+
+      return <span>{formattedCreatedAt}</span>;
+    },
+  },
+  {
+    accessorKey: "updatedAt",
+    accessorFn: (row) => row.updatedAt,
+    meta: {
+      label: "Date de mise à jour",
+    },
+    header: ({ column }) => <DataTableColumnHeader column={column} />,
+    cell: ({ row }) => {
+      const updatedAt = new Date(row.getValue("updatedAt"));
+      const formattedUpdatedAt = updatedAt?.toLocaleDateString("fr-FR");
+
+      return <span>{formattedUpdatedAt}</span>;
     },
   },
 ];

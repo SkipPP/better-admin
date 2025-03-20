@@ -1,4 +1,4 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 import authClient from "~/lib/utils/auth-client";
 import { SignInButton } from "~/lib/components/auth/SignInButton";
@@ -19,8 +19,6 @@ import {
 const REDIRECT_URL = "/dashboard";
 
 export function SignInForm() {
-  const router = useRouter();
-
   return (
     <div className={"flex flex-col gap-6"}>
       <Card>
@@ -52,14 +50,13 @@ export function SignInForm() {
               }
 
               await authClient.signIn.email(
-                { email, password },
+                { email, password, callbackURL: REDIRECT_URL },
                 {
                   onRequest: () => {
                     toast.info("Connexion en cours...");
                   },
                   onSuccess: () => {
                     toast.success("Connexion réussie");
-                    router.navigate({ to: REDIRECT_URL });
                   },
                   onError: (error) => {
                     console.error({ error });
