@@ -481,7 +481,14 @@ export const DataTableRowOrganizationsActions = memo(
                     .then(() => {
                       closeDialog("delete");
 
-                      router.invalidate();
+                      router.navigate({
+                        to: "/dashboard/organizations",
+                        search: {
+                          limit: 10,
+                          currentPage: 0,
+                        },
+                      });
+
                       toast.success("Organisation supprimée avec succès");
                     })
                     .catch((error) => handleApiError(error));

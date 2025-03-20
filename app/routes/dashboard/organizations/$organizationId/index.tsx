@@ -24,17 +24,17 @@ export const Route = createFileRoute("/dashboard/organizations/$organizationId/"
   loaderDeps: ({ search }) => ({
     organizationName: search.organizationName,
   }),
-  loader: async ({ params }) => {
+  loader: async ({ params, context }) => {
     const { organization } = await readOrganization({
       data: { organizationId: params.organizationId },
     });
 
-    return { organization };
+    return { organization, user: context.user };
   },
 });
 
 function RouteComponent() {
-  const { organization } = Route.useLoaderData();
+  const { organization, user } = Route.useLoaderData();
 
   const owner = organization?.members.find((member) => member.role === "owner");
 
@@ -50,14 +50,20 @@ function RouteComponent() {
               {organization?.createdAt?.toLocaleDateString("fr-FR")}
             </p>
             , par{" "}
-            <Link
-              to="/dashboard/administration/users/$userId"
-              params={{ userId: owner?.userId ?? "" }}
-              search={{ limit: 10, currentPage: 0, username: owner?.user.name }}
-              className="text-muted-foreground font-medium hover:underline"
-            >
-              {owner?.user.name}
-            </Link>
+            {user?.role === "admin" ? (
+              <Link
+                to="/dashboard/administration/users/$userId"
+                params={{ userId: owner?.userId ?? "" }}
+                search={{ limit: 10, currentPage: 0, username: owner?.user.name }}
+                className="text-muted-foreground font-medium hover:underline"
+              >
+                {owner?.user.name}
+              </Link>
+            ) : (
+              <span className="text-muted-foreground font-medium">
+                {owner?.user.name}
+              </span>
+            )}
             .
           </div>
         </div>
