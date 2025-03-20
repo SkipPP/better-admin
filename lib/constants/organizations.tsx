@@ -177,7 +177,7 @@ export const organizationMembersColumns: (
     accessorKey: "createdAt",
     accessorFn: (row) => row.createdAt,
     meta: {
-      label: "Date de création",
+      label: "Date d'ajout",
     },
     header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
