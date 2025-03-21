@@ -80,7 +80,7 @@ export function OrganizationSwitcher({ userData }: OrganizationSwitcherProps) {
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
-            align={"center"}
+            align={"start"}
             sideOffset={4}
           >
             {userData.organizations?.map((organization) => (

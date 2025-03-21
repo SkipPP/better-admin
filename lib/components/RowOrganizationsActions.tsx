@@ -3,11 +3,13 @@ import { useRouter } from "@tanstack/react-router";
 
 import { Organization, OrganizationTeam } from "~/server/auth";
 import {
+  createOrganizationTeam,
+  updateOrganizationTeam,
+} from "~/server/organization-teams";
+import {
   deleteOrganization,
   updateOrganization,
   addOrganizationMember,
-  addOrganizationTeam,
-  updateOrganizationTeam,
 } from "~/server/organizations";
 
 import { MoreHorizontal, Pencil, UserPlus, Trash, Plus } from "lucide-react";
@@ -347,7 +349,7 @@ export const DataTableRowOrganizationsActions = memo(
                 setIsLoading(true);
 
                 try {
-                  await addOrganizationTeam({ data: formData })
+                  await createOrganizationTeam({ data: formData })
                     .then(() => {
                       closeDialog("addTeam");
 
