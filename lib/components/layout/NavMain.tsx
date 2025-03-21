@@ -34,11 +34,13 @@ export function NavMain({
       search?: Record<string, string | number | Array<string | number>>;
     }[];
   }[];
-  title: React.ReactNode;
+  title?: string;
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
+      <SidebarGroupLabel>
+        {title ? title.charAt(0).toUpperCase() + title.slice(1) : "Mon organisation"}
+      </SidebarGroupLabel>
 
       <SidebarMenu>
         {items.map((item) => (

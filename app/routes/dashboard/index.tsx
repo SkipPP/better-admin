@@ -1,143 +1,60 @@
-import React from "react";
-
+import { Suspense } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { readOrganization } from "~/server/organizations";
+
+import { Edit, Loader2 } from "lucide-react";
+
+import { Button } from "~/lib/components/ui/button";
+import { AreaChart } from "~/lib/components/charts/AreaChart";
+import { DataTableRowOrganizationsActions } from "~/lib/components/RowOrganizationsActions";
+
 export const Route = createFileRoute("/dashboard/")({
-  component: DashboardIndex,
-  head: () => {
-    return {
-      meta: [
-        {
-          title: "rebass | dashboard",
-        },
-        {
-          name: "description",
-          content: "dashboard",
-        },
-      ],
-    };
+  component: RouteComponent,
+  loader: async ({ context }) => {
+    if (context.activeOrganization) {
+      const data = await readOrganization({
+        data: { organizationId: context.activeOrganization.id },
+      });
+
+      return { organization: data.organization };
+    }
+
+    return { organization: context.activeOrganization };
   },
 });
 
-function DashboardIndex() {
+function RouteComponent() {
+  const { organization } = Route.useLoaderData();
+
   return (
-    <React.Fragment>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget
-      aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam
-      euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc
-      quis nisl. Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-      accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
-      inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
-      ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
-      consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro
-      quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit,
-      sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam
-      quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam
-      corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. At vero eos
-      et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-      deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
-      cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia
-      animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita
-      distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil
-      impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda
-      est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-      rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae
-      non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut
-      reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus
-      asperiores repellat. Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-      accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
-      inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
-      ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
-      consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro
-      quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit,
-      sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam
-      quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam
-      corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem
-      vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae
-      consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? Lorem
-      ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-      ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-      ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-      reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-      Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-      mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-      Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam
-      nisl nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet
-      nunc, quis aliquam nisl nunc quis nisl. Sed ut perspiciatis unde omnis iste natus
-      error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque
-      ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-      explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut
-      fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
-      nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
-      consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut
-      labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis
-      nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea
-      commodi consequatur. At vero eos et accusamus et iusto odio dignissimos ducimus qui
-      blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas
-      molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa
-      qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-      rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est
-      eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere
-      possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem
-      quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et
-      voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic
-      tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias
-      consequatur aut perferendis doloribus asperiores repellat. Sed ut perspiciatis unde
-      omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem
-      aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae
-      vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur
-      aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem
-      sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
-      consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut
-      labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis
-      nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea
-      commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit
-      esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas
-      nulla pariatur? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-      eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-      fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-      qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet,
-      consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl
-      aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget aliquam
-      ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Sed ut
-      perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-      laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-      architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia
-      voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
-      qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum
-      quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi
-      tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad
-      minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi
-      ut aliquid ex ea commodi consequatur. At vero eos et accusamus et iusto odio
-      dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti
-      quos dolores et quas molestias excepturi sint occaecati cupiditate non provident,
-      similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et
-      dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero
-      tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod
-      maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-      repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum
-      necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non
-      recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
-      voluptatibus maiores alias consequatur aut perferendis doloribus asperiores
-      repellat. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-      doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
-      veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam
-      voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
-      magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est,
-      qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non
-      numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat
-      voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis
-      suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum
-      iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur,
-      vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? Lorem ipsum dolor sit
-      amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-      dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-      laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-      reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-      Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-      mollit anim id est laborum.
-    </React.Fragment>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="col-span-1 flex items-center justify-between lg:col-span-2">
+        <div className="flex flex-col items-start">
+          <h1 className="text-2xl font-bold">
+            {organization
+              ? organization.name.charAt(0).toUpperCase() + organization.name.slice(1)
+              : "Organisation"}
+          </h1>
+
+          <div className="text-muted-foreground text-sm">
+            Créée le{" "}
+            <p className="inline font-medium">
+              {organization?.createdAt?.toLocaleDateString("fr-FR")}
+            </p>
+          </div>
+        </div>
+
+        <DataTableRowOrganizationsActions organization={organization}>
+          <Button variant="dashed" className="cursor-pointer">
+            <Edit className="mr-1 h-4 w-4" /> Éditer
+          </Button>
+        </DataTableRowOrganizationsActions>
+      </div>
+
+      <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
+        <AreaChart />
+      </Suspense>
+    </div>
   );
 }

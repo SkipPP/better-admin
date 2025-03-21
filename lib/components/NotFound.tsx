@@ -11,12 +11,12 @@ export function NotFound() {
           404 - Page not found
         </h1>
 
-        <p className="text-muted-foreground text-sm md:text-base">
+        <p className="text-muted-foreground text-sm">
           Sorry, we couldn't find the page you're looking for. <br />
           It might have been moved or deleted.
         </p>
 
-        <Button asChild className="gap-2">
+        <Button asChild size="sm" className="gap-2">
           <Link to="/dashboard">
             <ArrowLeft className="h-4 w-4" />
             Back to dashboard

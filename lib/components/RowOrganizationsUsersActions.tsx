@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 
 import { OrganizationMember } from "~/server/auth";
 import {
-  removeMemberFromOrganization,
+  removeOrganizationMember,
   updateOrganizationMemberRole,
 } from "~/server/organizations";
 
@@ -208,7 +208,7 @@ export const DataTableRowOrganizationsUsersActions = memo(
                 setIsLoading(true);
 
                 try {
-                  await removeMemberFromOrganization({ data: formData })
+                  await removeOrganizationMember({ data: formData })
                     .then(() => {
                       closeDialog("delete");
 

@@ -23,16 +23,20 @@ export const Route = createFileRoute("/dashboard")({
     // https://tanstack.com/router/latest/docs/framework/react/guide/external-data-loading
   },
   loader: async ({ context }) => {
-    return { user: context.user };
+    return {
+      user: context.user,
+      activeOrganization: context.activeOrganization,
+      organizations: context.organizations,
+    };
   },
 });
 
 function DashboardLayout() {
-  const { user } = Route.useLoaderData();
+  const userData = Route.useLoaderData();
 
   return (
     <SidebarProvider>
-      <AppSidebar user={user} />
+      <AppSidebar userData={userData} />
 
       <SidebarInset className="flex h-[calc(100vh-2rem)] flex-col overflow-hidden">
         <header className="bg-background flex h-14 shrink-0 items-center gap-2">

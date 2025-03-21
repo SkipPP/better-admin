@@ -1,4 +1,4 @@
-import { queryOptions, type QueryClient } from "@tanstack/react-query";
+import { type QueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Scripts,
@@ -10,24 +10,24 @@ import {
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 // import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { getUser } from "~/server/users";
+import { getUserWithOrganizations, UserWithOrganizations } from "~/server/users";
 
 import { Toaster } from "sonner";
 import appCss from "~/lib/styles/app.css?url";
 
-const userQuery = queryOptions({
-  queryKey: ["user"],
-  queryFn: ({ signal }) => getUser({ signal }),
-});
-
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  user: Awaited<ReturnType<typeof getUser>>;
+  user: Awaited<UserWithOrganizations>;
 }>()({
-  beforeLoad: async ({ context }) => {
-    const user = await context.queryClient.fetchQuery(userQuery);
+  component: RootComponent,
+  beforeLoad: async () => {
+    const { user, organizations, activeOrganization } = await getUserWithOrganizations();
 
-    return { user };
+    return {
+      user,
+      organizations,
+      activeOrganization,
+    };
   },
   head: () => ({
     meta: [
@@ -45,7 +45,6 @@ export const Route = createRootRouteWithContext<{
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
-  component: RootComponent,
 });
 
 function RootComponent() {

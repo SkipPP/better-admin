@@ -1,8 +1,10 @@
 import { betterAuth } from "better-auth";
 import { admin, organization } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { eq } from "drizzle-orm";
 
 import { db } from "./db";
+import { member } from "./schema";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_BASE_URL,
@@ -39,6 +41,30 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+  },
+
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          // Find user's organizations
+          const userOrgs = await db
+            .select()
+            .from(member)
+            .where(eq(member.userId, session.userId));
+
+          // Set first organization as active if available
+          const activeOrgId = userOrgs.length > 0 ? userOrgs[0].organizationId : null;
+
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: activeOrgId,
+            },
+          };
+        },
+      },
+    },
   },
 
   advanced: {

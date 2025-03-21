@@ -1,18 +1,55 @@
-import { z } from "zod";
 import { createServerFn } from "@tanstack/react-start";
 import { getWebRequest, setCookie } from "@tanstack/react-start/server";
 
 import { auth } from "./auth";
 import { authMiddleware } from "../lib/middleware/auth-guard";
 
+import { handleServerError } from "../lib/hooks/error-handler";
+import { validateFormData } from "../lib/hooks/validate-formdata";
+
+import {
+  ADMIN_ERRORS,
+  userIdSchema,
+  userListSchema,
+  createUserSchema,
+  updateUserSchema,
+  userSchema,
+  banUserSchema,
+  setUserRoleSchema,
+  sessionTokenSchema,
+  sessionSchema,
+} from "../lib/constants/validators/admin";
+
+// Type definitions
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  banned?: {
+    reason: string;
+    expiresAt: Date;
+  };
+}
+
+export type UserRole = "user" | "admin" | "superadmin";
+
+export interface Session {
+  token: string;
+  userId: string;
+  expiresAt: Date;
+}
+
+/**
+ * Retrieves a paginated list of users
+ * @param limit - Number of users per page
+ * @param currentPage - Current page number (0-based)
+ * @returns {Promise<{users: User[], total: number}>} List of users and total count
+ * @throws {Error} If fetching users fails
+ */
 export const fetchUsers = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator(
-    z.object({
-      limit: z.number(),
-      currentPage: z.number(),
-    }),
-  )
+  .validator(userListSchema)
   .handler(async ({ data: { limit, currentPage } }) => {
     const { headers } = getWebRequest()!;
 
@@ -24,61 +61,48 @@ export const fetchUsers = createServerFn({ method: "GET" })
 
       return { users: data.users, total: data.total };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la récupération des utilisateurs");
+      handleServerError(error, ADMIN_ERRORS.FETCH_USERS);
     }
   });
 
+/**
+ * Creates a new user in the system
+ * @param name - User's full name
+ * @param email - User's email address
+ * @param password - User's password (min 8 characters)
+ * @param role - User's role (user/admin/superadmin)
+ * @returns {Promise<{user: User}>} Created user object
+ * @throws {Error} If validation fails or user creation fails
+ */
 export const createUser = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const name = data.get("name");
-    const email = data.get("email");
-    const password = data.get("password");
-    const role = data.get("role");
-
-    if (!name || !role || !email || !password) {
-      throw new Error(
-        "Le nom, le rôle, l'email et le mot de passe de l'utilisateur sont requis",
-      );
-    }
-
-    return {
-      name: name.toString(),
-      email: email.toString(),
-      password: password.toString(),
-      role: role.toString(),
-    };
+    return validateFormData(data, createUserSchema, ADMIN_ERRORS.INVALID_FORM);
   })
-  .handler(async ({ data: { name, email, password, role } }) => {
+  .handler(async ({ data }) => {
     const { headers } = getWebRequest()!;
 
     try {
-      const data = await auth.api.createUser({
+      const { user } = await auth.api.createUser({
         headers,
-        body: { name, email, password, role: role ?? "user" },
+        body: data,
       });
 
-      return { user: data.user };
+      return { user };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur inconnue lors de la création de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.CREATE_USER);
     }
   });
 
+/**
+ * Retrieves a single user by their ID
+ * @param userId - ID of the user to retrieve
+ * @returns {Promise<{user: User, total: number}>} User object and total count (always 1)
+ * @throws {Error} If user retrieval fails
+ */
 export const readUser = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator(z.object({ userId: z.string() }))
+  .validator(userIdSchema)
   .handler(async ({ data: { userId } }) => {
     const { headers } = getWebRequest()!;
 
@@ -94,42 +118,22 @@ export const readUser = createServerFn({ method: "GET" })
 
       return { user: data.users[0], total: 1 };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la récupération de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.FETCH_USER);
     }
   });
 
+/**
+ * Updates an existing user's information
+ * @param userId - ID of the user to update
+ * @param name - New name for the user
+ * @param role - New role for the user
+ * @returns {Promise<{status: string}>} Update operation status
+ * @throws {Error} If validation fails or update fails
+ */
 export const updateUser = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const userId = data.get("userId");
-    const name = data.get("name");
-    const role = data.get("role");
-
-    if (!userId || !name || !role) {
-      throw new Error(
-        !userId
-          ? "L'identifiant de l'utilisateur est requis"
-          : !name
-            ? "Le nom de l'utilisateur est requis"
-            : !role
-              ? "Le rôle de l'utilisateur est requis"
-              : "Une erreur est survenue",
-      );
-    }
-
-    return {
-      userId: userId.toString(),
-      name: name.toString(),
-      role: role.toString(),
-    };
+    return validateFormData(data, updateUserSchema, ADMIN_ERRORS.INVALID_FORM);
   })
   .handler(async ({ data: { userId, name, role } }) => {
     const { headers } = getWebRequest()!;
@@ -143,32 +147,20 @@ export const updateUser = createServerFn({ method: "POST" })
 
       return { status: data.status };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la mise à jour de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.UPDATE_USER);
     }
   });
 
+/**
+ * Deletes a user from the system
+ * @param userId - ID of the user to delete
+ * @returns {Promise<{success: boolean}>} Deletion operation status
+ * @throws {Error} If user tries to delete themselves or deletion fails
+ */
 export const deleteUser = createServerFn({ response: "full" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const userId = data.get("userId");
-
-    if (!userId) {
-      throw new Error(
-        !userId ? "L'identifiant de l'utilisateur est requis" : "Une erreur est survenue",
-      );
-    }
-
-    return {
-      userId: userId.toString(),
-    };
+    return validateFormData(data, userSchema, ADMIN_ERRORS.INVALID_FORM);
   })
   .handler(async ({ data: { userId }, context }) => {
     const { headers } = getWebRequest()!;
@@ -182,49 +174,22 @@ export const deleteUser = createServerFn({ response: "full" })
 
       return { success: data.success };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la suppression de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.DELETE_USER);
     }
   });
 
+/**
+ * Bans a user for a specified duration
+ * @param userId - ID of the user to ban
+ * @param banReason - Reason for the ban
+ * @param banExpiresIn - Ban expiration date (ISO string)
+ * @returns {Promise<{user: User}>} Updated user object with ban information
+ * @throws {Error} If user tries to ban themselves or ban operation fails
+ */
 export const banUser = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const userId = data.get("userId");
-    const banReason = data.get("banReason");
-    const banExpiresIn = data.get("banExpiresIn");
-
-    if (!userId || !banReason || !banExpiresIn) {
-      throw new Error(
-        !userId
-          ? "L'identifiant de l'utilisateur est requis"
-          : !banReason
-            ? "La raison du bannissement est requise"
-            : !banExpiresIn
-              ? "La date d'expiration du bannissement est requise"
-              : "Une erreur est survenue",
-      );
-    }
-
-    const banExpiresInDate = new Date(banExpiresIn.toString());
-    const differenceInMilliseconds = banExpiresInDate.getTime() - new Date().getTime();
-
-    if (isNaN(banExpiresInDate.getTime())) {
-      throw new Error("La date d'expiration du bannissement est invalide");
-    }
-
-    return {
-      userId: userId.toString(),
-      banReason: banReason.toString(),
-      banExpiresIn: Math.floor(differenceInMilliseconds / 1000),
-    };
+    return validateFormData(data, banUserSchema, ADMIN_ERRORS.INVALID_FORM);
   })
   .handler(async ({ data: { userId, banReason, banExpiresIn }, context }) => {
     const { headers } = getWebRequest()!;
@@ -241,32 +206,20 @@ export const banUser = createServerFn({ method: "POST" })
 
       return { user: data.user };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la bannissement de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.BAN_USER);
     }
   });
 
+/**
+ * Removes a ban from a user
+ * @param userId - ID of the user to unban
+ * @returns {Promise<{user: User}>} Updated user object without ban information
+ * @throws {Error} If user tries to unban themselves or unban operation fails
+ */
 export const unbanUser = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const userId = data.get("userId");
-
-    if (!userId) {
-      throw new Error(
-        !userId ? "L'identifiant de l'utilisateur est requis" : "Une erreur est survenue",
-      );
-    }
-
-    return {
-      userId: userId.toString(),
-    };
+    return validateFormData(data, userSchema, ADMIN_ERRORS.INVALID_FORM);
   })
   .handler(async ({ data: { userId }, context }) => {
     const { headers } = getWebRequest()!;
@@ -283,38 +236,21 @@ export const unbanUser = createServerFn({ method: "POST" })
 
       return { user: data.user };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la débannissement de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.UNBAN_USER);
     }
   });
 
+/**
+ * Updates a user's role in the system
+ * @param userId - ID of the user to update
+ * @param role - New role to assign
+ * @returns {Promise<{user: User}>} Updated user object
+ * @throws {Error} If validation fails or role update fails
+ */
 export const setUserRole = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const userId = data.get("userId");
-    const role = data.get("role");
-
-    if (!userId || !role) {
-      throw new Error(
-        !userId
-          ? "L'identifiant de l'utilisateur est requis"
-          : !role
-            ? "Le rôle de l'utilisateur est requis"
-            : "Une erreur est survenue",
-      );
-    }
-
-    return {
-      userId: userId.toString(),
-      role: role.toString(),
-    };
+    return validateFormData(data, setUserRoleSchema, ADMIN_ERRORS.INVALID_FORM);
   })
   .handler(async ({ data: { userId, role } }) => {
     const { headers } = getWebRequest()!;
@@ -327,23 +263,21 @@ export const setUserRole = createServerFn({ method: "POST" })
 
       return { user: data.user };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la modification du rôle de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.SET_ROLE);
     }
   });
 
+/**
+ * Retrieves all active sessions for a user
+ * @param userId - ID of the user to get sessions for
+ * @param limit - Number of sessions per page
+ * @param currentPage - Current page number (0-based)
+ * @returns {Promise<{sessions: Session[], total: number}>} List of sessions and total count
+ * @throws {Error} If session retrieval fails
+ */
 export const listUserSessions = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator(
-    z.object({
-      userId: z.string(),
-      limit: z.number(),
-      currentPage: z.number(),
-    }),
-  )
+  .validator(sessionSchema)
   .handler(async ({ data: { userId, limit, currentPage } }) => {
     const { headers } = getWebRequest()!;
 
@@ -355,17 +289,19 @@ export const listUserSessions = createServerFn({ method: "GET" })
 
       return { sessions: data.sessions, total: data.sessions.length };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la récupération des sessions de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.SESSIONS);
     }
   });
 
+/**
+ * Revokes all active sessions for a user
+ * @param userId - ID of the user whose sessions to revoke
+ * @returns {Promise<{success: boolean}>} Revocation operation status
+ * @throws {Error} If user tries to revoke their own sessions or operation fails
+ */
 export const revokeAllUserSessions = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(z.object({ userId: z.string() }))
+  .validator(userIdSchema)
   .handler(async ({ data: { userId }, context }) => {
     const { headers } = getWebRequest()!;
 
@@ -378,17 +314,19 @@ export const revokeAllUserSessions = createServerFn({ method: "POST" })
 
       return { success: data.success };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la révocation des sessions de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.REVOKE_SESSIONS);
     }
   });
 
+/**
+ * Revokes a specific session
+ * @param sessionToken - Token of the session to revoke
+ * @returns {Promise<{success: boolean}>} Revocation operation status
+ * @throws {Error} If user tries to revoke their own session or operation fails
+ */
 export const revokeUserSession = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(z.object({ sessionToken: z.string() }))
+  .validator(sessionTokenSchema)
   .handler(async ({ data: { sessionToken }, context }) => {
     const { headers } = getWebRequest()!;
 
@@ -401,31 +339,36 @@ export const revokeUserSession = createServerFn({ method: "POST" })
 
       return { success: data.success };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la révocation de la session de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.REVOKE_SESSION);
     }
   });
 
+/**
+ * Impersonates another user's session
+ * @param userId - ID of the user to impersonate
+ * @returns {Promise<{session: Session, user: User}>} New session and user data
+ * @throws {Error} If impersonation fails or user tries to impersonate themselves
+ */
 export const impersonateUser = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(z.object({ userId: z.string() }))
-  .handler(async ({ data: { userId } }) => {
+  .validator(userIdSchema)
+  .handler(async ({ data: { userId }, context }) => {
     const { headers } = getWebRequest()!;
 
+    if (context?.user?.id === userId) {
+      throw new Error(ADMIN_ERRORS.SELF_ACTION);
+    }
+
     try {
-      const data = await auth.api.impersonateUser({ headers, body: { userId } });
+      const data = await auth.api.impersonateUser({
+        headers,
+        body: { userId },
+      });
 
       setCookie("session_token", data.session.token);
 
       return { session: data.session, user: data.user };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de l'impersonation de l'utilisateur");
+      handleServerError(error, ADMIN_ERRORS.IMPERSONATE);
     }
   });

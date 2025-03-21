@@ -1,18 +1,48 @@
-import { z } from "zod";
 import { createServerFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
 
 import { auth } from "./auth";
 import { authMiddleware } from "../lib/middleware/auth-guard";
 
-export const fetchUserOrganizations = createServerFn({ method: "GET" })
+import { handleServerError } from "../lib/hooks/error-handler";
+import { validateFormData } from "../lib/hooks/validate-formdata";
+
+import {
+  createOrganizationSchema,
+  deleteOrganizationSchema,
+  memberSchema,
+  ORGANIZATION_ERRORS,
+  organizationIdSchema,
+  organizationListSchema,
+  removeOrganizationMemberSchema,
+  updateOrganizationMemberRoleSchema,
+  updateOrganizationSchema,
+} from "../lib/constants/validators/organization";
+
+export type OrganizationRole = "member" | "admin" | "owner";
+
+export interface OrganizationMember {
+  organizationId: string;
+  userId: string;
+  role: OrganizationRole;
+  teamId?: string;
+}
+
+export interface Organization {
+  name: string;
+  slug: string;
+  logo?: string;
+}
+
+/**
+ * Retrieves a paginated list of organizations for the authenticated user
+ * @param limit - Number of organizations per page
+ * @param currentPage - Current page number for pagination
+ * @returns {Promise<{organizations: Organization[]}>} Object containing list of organizations
+ */
+export const listUserOrganizations = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator(
-    z.object({
-      limit: z.number(),
-      currentPage: z.number(),
-    }),
-  )
+  .validator(organizationListSchema)
   .handler(async ({ data: { limit, currentPage } }) => {
     const { headers } = getWebRequest()!;
 
@@ -24,34 +54,27 @@ export const fetchUserOrganizations = createServerFn({ method: "GET" })
 
       return { organizations: data };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la récupération des organisations");
+      handleServerError(error, ORGANIZATION_ERRORS.FETCH);
     }
   });
 
+/**
+ * Creates a new organization
+ * Validates and processes form data containing organization details
+ * @param name - Organization name
+ * @param slug - Organization unique identifier
+ * @param logo - Optional organization logo
+ * @returns {Promise<{organization: Organization}>} Object containing the created organization
+ * @throws {Error} If organization creation fails
+ */
 export const createOrganization = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const name = data.get("name");
-    const slug = data.get("slug");
-    const logo = data.get("logo");
-
-    if (!name || !slug) {
-      throw new Error("Le nom et le slug de l'organisation sont requis");
-    }
-
-    return {
-      name: name.toString(),
-      slug: slug.toString(),
-      logo: logo?.toString(),
-    };
+    return validateFormData(
+      data,
+      createOrganizationSchema,
+      ORGANIZATION_ERRORS.INVALID_FORM,
+    );
   })
   .handler(async ({ data: { name, slug, logo } }) => {
     const { headers } = getWebRequest()!;
@@ -64,17 +87,19 @@ export const createOrganization = createServerFn({ method: "POST" })
 
       return { organization: data };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la création de l'organisation");
+      handleServerError(error, ORGANIZATION_ERRORS.CREATE);
     }
   });
 
+/**
+ * Retrieves detailed information about a specific organization
+ * @param organizationId - Unique identifier of the organization
+ * @returns {Promise<{organization: Organization}>} Object containing organization details
+ * @throws {Error} If organization retrieval fails
+ */
 export const readOrganization = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator(z.object({ organizationId: z.string() }))
+  .validator(organizationIdSchema)
   .handler(async ({ data: { organizationId } }) => {
     const { headers } = getWebRequest()!;
 
@@ -86,36 +111,27 @@ export const readOrganization = createServerFn({ method: "GET" })
 
       return { organization: data };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la récupération de l'organisation");
+      handleServerError(error, ORGANIZATION_ERRORS.FETCH);
     }
   });
 
+/**
+ * Updates an existing organization's information
+ * @param organizationId - Organization to update
+ * @param name - New organization name
+ * @param slug - New organization slug
+ * @param logo - New organization logo (optional)
+ * @returns {Promise<{organization: Organization}>} Object containing the updated organization
+ * @throws {Error} If organization update fails
+ */
 export const updateOrganization = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const organizationId = data.get("organizationId");
-    const name = data.get("name");
-    const slug = data.get("slug");
-    const logo = data.get("logo");
-
-    if (!organizationId || !name || !slug) {
-      throw new Error("Le nom et le slug de l'organisation sont requis");
-    }
-
-    return {
-      organizationId: organizationId.toString(),
-      name: name.toString(),
-      slug: slug.toString(),
-      logo: logo?.toString(),
-    };
+    return validateFormData(
+      data,
+      updateOrganizationSchema,
+      ORGANIZATION_ERRORS.INVALID_FORM,
+    );
   })
   .handler(async ({ data: { organizationId, name, slug, logo } }) => {
     const { headers } = getWebRequest()!;
@@ -129,30 +145,24 @@ export const updateOrganization = createServerFn({ method: "POST" })
 
       return { organization: data };
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la modification de l'organisation");
+      handleServerError(error, ORGANIZATION_ERRORS.UPDATE);
     }
   });
 
+/**
+ * Deletes an organization
+ * @param organizationId - Organization to delete
+ * @returns {Promise<{success: boolean}>} Object containing the success status of the deletion
+ * @throws {Error} If organization deletion fails
+ */
 export const deleteOrganization = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const organizationId = data.get("organizationId");
-
-    if (!organizationId) {
-      throw new Error("L'identifiant de l'organisation est requis");
-    }
-
-    return {
-      organizationId: organizationId.toString(),
-    };
+    return validateFormData(
+      data,
+      deleteOrganizationSchema,
+      ORGANIZATION_ERRORS.INVALID_FORM,
+    );
   })
   .handler(async ({ data: { organizationId } }) => {
     const { headers } = getWebRequest()!;
@@ -164,38 +174,45 @@ export const deleteOrganization = createServerFn({ method: "POST" })
         query: { organizationId },
       });
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la suppression de l'organisation");
+      handleServerError(error, ORGANIZATION_ERRORS.DELETE);
     }
   });
 
-export const addMemberToOrganization = createServerFn({ method: "POST" })
+/**
+ * Sets the active organization for the current user
+ * @param organizationId - Organization to set as active
+ * @returns {Promise<{success: boolean}>} Object containing the success status of the operation
+ * @throws {Error} If setting active organization fails
+ */
+export const setActiveOrganization = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(organizationIdSchema)
+  .handler(async ({ data: { organizationId } }) => {
+    const { headers } = getWebRequest()!;
+
+    try {
+      await auth.api.setActiveOrganization({
+        headers,
+        body: { organizationId },
+      });
+    } catch (error) {
+      handleServerError(error, ORGANIZATION_ERRORS.FETCH);
+    }
+  });
+
+/**
+ * Adds a new member to an organization
+ * @param organizationId - Organization to add member to
+ * @param userId - User to add as member
+ * @param role - Role to assign to the user (member/admin/owner)
+ * @param teamId - Optional team to add the member to
+ * @returns {Promise<{success: boolean}>} Object containing the success status of the operation
+ * @throws {Error} If adding member fails
+ */
+export const addOrganizationMember = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const organizationId = data.get("organizationId");
-    const userId = data.get("userId");
-    const role = data.get("role");
-    const teamId = data.get("teamId");
-
-    if (!organizationId || !userId || !role) {
-      throw new Error(
-        "L'identifiant de l'organisation, l'identifiant de l'utilisateur et le rôle sont requis",
-      );
-    }
-
-    return {
-      organizationId: organizationId.toString(),
-      userId: userId.toString(),
-      role: role.toString() as "member" | "admin" | "owner",
-      teamId: teamId?.toString(),
-    };
+    return validateFormData(data, memberSchema, ORGANIZATION_ERRORS.INVALID_FORM);
   })
   .handler(async ({ data: { organizationId, userId, role, teamId } }) => {
     const { headers } = getWebRequest()!;
@@ -206,38 +223,28 @@ export const addMemberToOrganization = createServerFn({ method: "POST" })
         body: { organizationId, userId, role, teamId },
       });
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de l'ajout d'un membre à l'organisation");
+      handleServerError(error, ORGANIZATION_ERRORS.FETCH);
     }
   });
 
+/**
+ * Updates the role of an organization member
+ * Prevents modification of owner roles
+ * @param organizationId - Target organization
+ * @param memberId - Member whose role to update
+ * @param role - New role to assign
+ * @param userRole - Current role of the user
+ * @returns {Promise<{success: boolean}>} Object containing the success status of the operation
+ * @throws {Error} If updating member role fails
+ */
 export const updateOrganizationMemberRole = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const organizationId = data.get("organizationId");
-    const userId = data.get("userId");
-    const userRole = data.get("userRole");
-    const role = data.get("role");
-
-    if (!organizationId || !userId || !role || !userRole) {
-      throw new Error(
-        "L'identifiant de l'organisation, l'identifiant de l'utilisateur et le rôle sont requis",
-      );
-    }
-
-    return {
-      organizationId: organizationId.toString(),
-      memberId: userId.toString(),
-      role: role.toString() as "member" | "admin" | "owner",
-      userRole: userRole.toString() as "member" | "admin" | "owner",
-    };
+    return validateFormData(
+      data,
+      updateOrganizationMemberRoleSchema,
+      ORGANIZATION_ERRORS.INVALID_FORM,
+    );
   })
   .handler(async ({ data: { organizationId, memberId, role, userRole } }) => {
     const { headers } = getWebRequest()!;
@@ -252,34 +259,25 @@ export const updateOrganizationMemberRole = createServerFn({ method: "POST" })
         body: { organizationId, memberId, role },
       });
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la modification du rôle du membre");
+      handleServerError(error, ORGANIZATION_ERRORS.FETCH);
     }
   });
 
-export const removeMemberFromOrganization = createServerFn({ method: "POST" })
+/**
+ * Removes a member from an organization
+ * @param organizationId - Organization to remove member from
+ * @param memberIdOrEmail - ID or email of the member to remove
+ * @returns {Promise<{success: boolean}>} Object containing the success status of the operation
+ * @throws {Error} If removing member fails
+ */
+export const removeOrganizationMember = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const organizationId = data.get("organizationId");
-    const memberIdOrEmail = data.get("memberIdOrEmail");
-
-    if (!organizationId || !memberIdOrEmail) {
-      throw new Error(
-        "L'identifiant de l'organisation et l'identifiant de l'utilisateur sont requis",
-      );
-    }
-
-    return {
-      organizationId: organizationId.toString(),
-      memberIdOrEmail: memberIdOrEmail.toString(),
-    };
+    return validateFormData(
+      data,
+      removeOrganizationMemberSchema,
+      ORGANIZATION_ERRORS.INVALID_FORM,
+    );
   })
   .handler(async ({ data: { organizationId, memberIdOrEmail } }) => {
     const { headers } = getWebRequest()!;
@@ -290,84 +288,6 @@ export const removeMemberFromOrganization = createServerFn({ method: "POST" })
         body: { memberIdOrEmail, organizationId },
       });
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la suppression d'un membre de l'organisation");
-    }
-  });
-
-export const addTeamToOrganization = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const organizationId = data.get("organizationId");
-    const name = data.get("name");
-
-    if (!organizationId || !name) {
-      throw new Error(
-        "L'identifiant de l'organisation et le nom de l'équipe sont requis",
-      );
-    }
-
-    return {
-      organizationId: organizationId.toString(),
-      name: name.toString(),
-    };
-  })
-  .handler(async ({ data: { organizationId, name } }) => {
-    const { headers } = getWebRequest()!;
-
-    try {
-      await auth.api.createTeam({
-        headers,
-        body: { organizationId, name },
-      });
-    } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de l'ajout d'une équipe à l'organisation");
-    }
-  });
-
-export const updateOrganizationTeam = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((data: FormData | unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error("Invalid form data");
-    }
-
-    const teamId = data.get("teamId");
-    const name = data.get("name");
-
-    if (!teamId || !name) {
-      throw new Error("L'identifiant de l'équipe et le nom sont requis");
-    }
-
-    return {
-      teamId: teamId.toString(),
-      name: name.toString(),
-    };
-  })
-  .handler(async ({ data: { teamId, name } }) => {
-    const { headers } = getWebRequest()!;
-
-    try {
-      await auth.api.updateTeam({
-        headers,
-        body: { teamId, data: { name } },
-      });
-    } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
-
-      throw new Error("Erreur lors de la modification de l'équipe");
+      handleServerError(error, ORGANIZATION_ERRORS.FETCH);
     }
   });

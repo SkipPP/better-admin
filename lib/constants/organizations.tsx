@@ -149,9 +149,9 @@ export const organizationMembersColumns: (
     header: ({ column }) => <DataTableColumnHeader column={column} />,
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start gap-y-1">
           <Link
-            to="/dashboard/administration/users/$userId"
+            to="/dashboard/users/$userId"
             params={{ userId: row.original.userId }}
             search={{
               limit: 10,
@@ -165,7 +165,7 @@ export const organizationMembersColumns: (
 
           <a
             href={`mailto:${row.original.user.email}`}
-            className="text-muted-foreground hover:underline"
+            className="text-muted-foreground text-xs hover:underline"
           >
             {row.original.user.email}
           </a>

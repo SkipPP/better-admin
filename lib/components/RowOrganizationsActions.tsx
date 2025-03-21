@@ -5,8 +5,8 @@ import { Organization, OrganizationTeam } from "~/server/auth";
 import {
   deleteOrganization,
   updateOrganization,
-  addMemberToOrganization,
-  addTeamToOrganization,
+  addOrganizationMember,
+  addOrganizationTeam,
   updateOrganizationTeam,
 } from "~/server/organizations";
 
@@ -42,7 +42,7 @@ import {
 } from "~/lib/components/ui/select";
 
 type DataTableRowOrganizationsActionsProps = {
-  organization: Organization | null;
+  organization?: Organization | null;
   children?: React.ReactNode;
 };
 
@@ -86,8 +86,8 @@ export const DataTableRowOrganizationsActions = memo(
       <Dialog
         open={
           dialogStates.edit ||
-          dialogStates.addUser ||
           dialogStates.delete ||
+          dialogStates.addUser ||
           dialogStates.addTeam ||
           dialogStates.editTeam
         }
@@ -95,10 +95,10 @@ export const DataTableRowOrganizationsActions = memo(
           if (!open) {
             if (dialogStates.edit) {
               closeDialog("edit");
-            } else if (dialogStates.addUser) {
-              closeDialog("addUser");
             } else if (dialogStates.delete) {
               closeDialog("delete");
+            } else if (dialogStates.addUser) {
+              closeDialog("addUser");
             } else if (dialogStates.addTeam) {
               closeDialog("addTeam");
             } else if (dialogStates.editTeam) {
@@ -251,7 +251,7 @@ export const DataTableRowOrganizationsActions = memo(
                 setIsLoading(true);
 
                 try {
-                  await addMemberToOrganization({ data: formData })
+                  await addOrganizationMember({ data: formData })
                     .then(() => {
                       closeDialog("addUser");
 
@@ -347,7 +347,7 @@ export const DataTableRowOrganizationsActions = memo(
                 setIsLoading(true);
 
                 try {
-                  await addTeamToOrganization({ data: formData })
+                  await addOrganizationTeam({ data: formData })
                     .then(() => {
                       closeDialog("addTeam");
 
