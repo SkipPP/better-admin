@@ -1,8 +1,10 @@
 import { betterAuth } from "better-auth";
-import { admin } from "better-auth/plugins/admin";
+import { admin, organization } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { eq } from "drizzle-orm";
 
 import { db } from "./db";
+import { member } from "./schema";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_BASE_URL,
@@ -10,7 +12,27 @@ export const auth = betterAuth({
     provider: "pg",
   }),
 
-  plugins: [admin()],
+  plugins: [
+    admin(),
+    organization({
+      teams: {
+        enabled: true,
+        maximumTeams: 10, // Optional: limit teams per organization
+        allowRemovingAllTeams: false, // Optional: prevent removing the last team
+      },
+      async sendInvitationEmail(data) {
+        const inviteLink = `http://localhost:3000/accept-invitation?invitationId=${data.id}`;
+
+        console.log({
+          email: data.email,
+          invitedByUsername: data.inviter.user.name,
+          invitedByEmail: data.inviter.user.email,
+          teamName: data.organization.name,
+          inviteLink,
+        });
+      },
+    }),
+  ],
 
   // https://www.better-auth.com/docs/concepts/oauth
   socialProviders: {
@@ -28,10 +50,33 @@ export const auth = betterAuth({
     },
   },
 
-  // https://www.better-auth.com/docs/authentication/email-password
-  // emailAndPassword: {
-  //   enabled: true,
-  // },
+  emailAndPassword: {
+    enabled: true,
+  },
+
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          // Find user's organizations
+          const userOrgs = await db
+            .select()
+            .from(member)
+            .where(eq(member.userId, session.userId));
+
+          // Set first organization as active if available
+          const activeOrgId = userOrgs.length > 0 ? userOrgs[0].organizationId : null;
+
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: activeOrgId,
+            },
+          };
+        },
+      },
+    },
+  },
 
   advanced: {
     cookies: {

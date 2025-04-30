@@ -2,10 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { UserWithRole } from "better-auth/plugins/admin";
 
-import { Badge } from "~/lib/components/ui/badge";
-import { DataTableRowUsersActions } from "~/lib/components/RowUsersActions";
-import { Avatar, AvatarFallback, AvatarImage } from "~/lib/components/ui/avatar";
-import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
+import { Badge } from "~/components/ui/badge";
+import { DataTableRowUsersActions } from "~/components/RowUsersActions";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { DataTableColumnHeader } from "~/components/table/DataTableColumnHeader";
 
 import {
   UserCheck,

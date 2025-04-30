@@ -1,4 +1,4 @@
-import { queryOptions, type QueryClient } from "@tanstack/react-query";
+import { type QueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Scripts,
@@ -10,22 +10,18 @@ import {
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 // import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { getUser } from "~/server/users";
+import { getUserWithOrganizations, UserWithOrganizations } from "~/server/users";
 
 import { Toaster } from "sonner";
 import appCss from "~/lib/styles/app.css?url";
 
-const userQuery = queryOptions({
-  queryKey: ["user"],
-  queryFn: ({ signal }) => getUser({ signal }),
-});
-
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  user: Awaited<ReturnType<typeof getUser>>;
+  user: Awaited<UserWithOrganizations>;
 }>()({
-  beforeLoad: async ({ context }) => {
-    const user = await context.queryClient.fetchQuery(userQuery);
+  component: RootComponent,
+  beforeLoad: async () => {
+    const user = await getUserWithOrganizations();
 
     return { user };
   },
@@ -39,13 +35,12 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "rebass",
+        title: "rebass | just better.",
       },
-      { name: "description", content: "mh ok" },
+      { name: "description", content: "rebass - project management tool" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
-  component: RootComponent,
 });
 
 function RootComponent() {
