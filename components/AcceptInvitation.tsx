@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router";
 
-import authClient from "../utils/auth-client";
 import { FullInvitation } from "~/server/types";
+import authClient from "~/lib/utils/auth-client";
 
 import { Check, Clock, User, Users, X } from "lucide-react";
 
