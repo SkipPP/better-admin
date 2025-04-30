@@ -1,13 +1,11 @@
 import { z } from "zod";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-import { readOrganization } from "~/server/organizations";
+import { Button } from "~/components/ui/button";
 
-import { Button } from "~/lib/components/ui/button";
-
-import { DataTable } from "~/lib/components/table/DataTable";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/lib/components/ui/tabs";
-import { DataTableRowOrganizationsActions } from "~/lib/components/RowOrganizationsActions";
+import { DataTable } from "~/components/table/DataTable";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
+import { DataTableRowOrganizationsActions } from "~/components/organizations/OrganizationsActions";
 import {
   filters,
   organizationTeamsColumns,
@@ -16,7 +14,9 @@ import {
 
 import { Edit, UserIcon, Users } from "lucide-react";
 
-export const Route = createFileRoute("/dashboard/(administration)/organizations/$organizationId/")({
+export const Route = createFileRoute(
+  "/dashboard/(administration)/organizations/$organizationId/",
+)({
   component: RouteComponent,
   validateSearch: z.object({
     organizationName: z.string().optional(),
@@ -24,19 +24,17 @@ export const Route = createFileRoute("/dashboard/(administration)/organizations/
   loaderDeps: ({ search }) => ({
     organizationName: search.organizationName,
   }),
-  loader: async ({ params, context }) => {
-    const { organization } = await readOrganization({
-      data: { organizationId: params.organizationId },
-    });
+  loader: async ({ context: { user }, params }) => {
+    const organization = user?.organizations.find(
+      (organization) => organization.id === params.organizationId,
+    );
 
-    return { organization, user: context.user };
+    return { organization };
   },
 });
 
 function RouteComponent() {
-  const { organization, user } = Route.useLoaderData();
-
-  const owner = organization?.members.find((member) => member.role === "owner");
+  const { organization } = Route.useLoaderData();
 
   return (
     <div className="relative space-y-4">
@@ -49,27 +47,12 @@ function RouteComponent() {
             <p className="inline font-medium">
               {organization?.createdAt?.toLocaleDateString("fr-FR")}
             </p>
-            , par{" "}
-            {user?.role === "admin" ? (
-              <Link
-                to="/dashboard/administration/users/$userId"
-                params={{ userId: owner?.userId ?? "" }}
-                search={{ limit: 10, currentPage: 0, username: owner?.user.name }}
-                className="text-muted-foreground font-medium hover:underline"
-              >
-                {owner?.user.name}
-              </Link>
-            ) : (
-              <span className="text-muted-foreground font-medium">
-                {owner?.user.name}
-              </span>
-            )}
             .
           </div>
         </div>
 
         <DataTableRowOrganizationsActions organization={organization}>
-          <Button variant="secondary" className="cursor-pointer">
+          <Button variant="dashed" className="cursor-pointer">
             <Edit className="mr-1 h-4 w-4" /> Mettre à jour
           </Button>
         </DataTableRowOrganizationsActions>
@@ -89,7 +72,7 @@ function RouteComponent() {
         <TabsContent value="members">
           <DataTable
             search={true}
-            columns={organizationMembersColumns(organization)}
+            columns={organizationMembersColumns}
             data={organization?.members ?? []}
             filters={filters}
           />

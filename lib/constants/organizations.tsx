@@ -1,15 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
-import { Organization, OrganizationMember, OrganizationTeam } from "~/server/auth";
+import { Team, Organization, OrganizationMember } from "~/server/types";
 
 import { UserCheck, UserIcon } from "lucide-react";
 
-import { Badge } from "~/lib/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "~/lib/components/ui/avatar";
+import { Badge } from "~/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
-import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
-import { DataTableRowOrganizationsActions } from "~/lib/components/RowOrganizationsActions";
-import { DataTableRowOrganizationsUsersActions } from "~/lib/components/RowOrganizationsUsersActions";
+import { DataTableColumnHeader } from "~/components/table/DataTableColumnHeader";
+import { DataTableRowOrganizationsActions } from "~/components/organizations/OrganizationsActions";
+import { DataTableRowOrganizationsUsersActions } from "~/components/organizations/OrganizationsUsersActions";
 
 export const filters = [
   {
@@ -115,12 +115,10 @@ export const columns: ColumnDef<Organization>[] = [
   },
 ];
 
-export const organizationMembersColumns: (
-  organization?: Organization | null,
-) => ColumnDef<OrganizationMember>[] = (organization) => [
+export const organizationMembersColumns: ColumnDef<OrganizationMember>[] = [
   {
     accessorKey: "image",
-    accessorFn: (row) => row.user.image,
+    accessorFn: (row) => row.user?.image,
     meta: {
       label: "Avatar",
     },
@@ -128,10 +126,13 @@ export const organizationMembersColumns: (
     cell: ({ row }) => {
       return (
         <Avatar className="h-8 w-8 rounded-lg">
-          <AvatarImage src={row.original.user.image} alt={row.original.user.name} />
+          <AvatarImage
+            src={row.original.user?.image ?? ""}
+            alt={row.original.user?.name ?? ""}
+          />
 
           <AvatarFallback className="rounded-lg">
-            {row.original.user.name.charAt(0).toUpperCase()}
+            {row.original.user?.name?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       );
@@ -142,7 +143,7 @@ export const organizationMembersColumns: (
   },
   {
     accessorKey: "name",
-    accessorFn: (row) => row.user.name,
+    accessorFn: (row) => row.user?.name,
     meta: {
       label: "Utilisateur",
     },
@@ -150,24 +151,13 @@ export const organizationMembersColumns: (
     cell: ({ row }) => {
       return (
         <div className="flex flex-col items-start gap-y-1">
-          <Link
-            to="/dashboard/users/$userId"
-            params={{ userId: row.original.userId }}
-            search={{
-              limit: 10,
-              currentPage: 0,
-              username: row.original.user.name,
-            }}
-            className="font-medium hover:underline"
-          >
-            {row.original.user.name}
-          </Link>
+          <span className="font-medium">{row.original.user?.name}</span>
 
           <a
-            href={`mailto:${row.original.user.email}`}
+            href={`mailto:${row.original.user?.email}`}
             className="text-muted-foreground text-xs hover:underline"
           >
-            {row.original.user.email}
+            {row.original.user?.email}
           </a>
         </div>
       );
@@ -212,7 +202,7 @@ export const organizationMembersColumns: (
       return value.includes(row.getValue(id));
     },
   },
-  {
+  /* {
     accessorKey: "teamId",
     accessorFn: (row) => row.teamId,
     meta: {
@@ -234,7 +224,7 @@ export const organizationMembersColumns: (
         </Badge>
       );
     },
-  },
+  }, */
   {
     id: "actions",
     meta: {
@@ -247,7 +237,7 @@ export const organizationMembersColumns: (
   },
 ];
 
-export const organizationTeamsColumns: ColumnDef<OrganizationTeam>[] = [
+export const organizationTeamsColumns: ColumnDef<Team>[] = [
   {
     accessorKey: "name",
     accessorFn: (row) => row.name,

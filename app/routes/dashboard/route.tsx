@@ -1,15 +1,11 @@
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 
-import { Breadcrumb } from "~/lib/components/layout/Breadcrumb";
-import { AppSidebar } from "~/lib/components/layout/Sidebar";
+import { AppSidebar } from "~/components/layout/Sidebar";
+import { Breadcrumb } from "~/components/layout/Breadcrumb";
 
-import { Separator } from "~/lib/components/ui/separator";
-import ThemeToggle from "~/lib/components/layout/ThemeToggle";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "~/lib/components/ui/sidebar";
+import { Separator } from "~/components/ui/separator";
+import ThemeToggle from "~/components/layout/ThemeToggle";
+import { SidebarInset, SidebarTrigger, SidebarProvider } from "~/components/ui/sidebar";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -17,26 +13,20 @@ export const Route = createFileRoute("/dashboard")({
     if (!context.user) {
       throw redirect({ to: "/signin" });
     }
-
-    // `context.queryClient` is also available in our loaders
-    // https://tanstack.com/start/latest/docs/framework/react/examples/start-basic-react-query
-    // https://tanstack.com/router/latest/docs/framework/react/guide/external-data-loading
   },
   loader: async ({ context }) => {
     return {
       user: context.user,
-      activeOrganization: context.activeOrganization,
-      organizations: context.organizations,
     };
   },
 });
 
 function DashboardLayout() {
-  const userData = Route.useLoaderData();
+  const { user } = Route.useLoaderData();
 
   return (
     <SidebarProvider>
-      <AppSidebar userData={userData} />
+      <AppSidebar user={user} />
 
       <SidebarInset className="flex h-[calc(100vh-2rem)] flex-col overflow-hidden">
         <header className="bg-background flex h-14 shrink-0 items-center gap-2">

@@ -3,9 +3,9 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 
 import { listUserSessions, readUser, revokeAllUserSessions } from "~/server/admin";
 
-import { Button } from "~/lib/components/ui/button";
+import { Button } from "~/components/ui/button";
 import { columns, filters } from "~/lib/constants/sessions";
-import { DataTable } from "~/lib/components/table/DataTable";
+import { DataTable } from "~/components/table/DataTable";
 
 import { toast } from "sonner";
 import { Trash } from "lucide-react";

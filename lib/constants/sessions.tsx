@@ -1,9 +1,9 @@
 import { Session } from "better-auth";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Badge } from "../components/ui/badge";
-import { DataTableRowSessionsActions } from "../components/RowSessionsActions";
-import { DataTableColumnHeader } from "~/lib/components/table/DataTableColumnHeader";
+import { Badge } from "~/components/ui/badge";
+import { DataTableRowSessionsActions } from "~/components/RowSessionsActions";
+import { DataTableColumnHeader } from "~/components/table/DataTableColumnHeader";
 
 import { SiFirefox, SiGooglechrome, SiSafari } from "@icons-pack/react-simple-icons";
 

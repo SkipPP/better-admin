@@ -1,2 +1,4 @@
+export * from "./meeting.schema";
 export * from "./auth.schema";
-// export your other schemas here
+export * from "./relations.schema";
+export * from "./task.schema";

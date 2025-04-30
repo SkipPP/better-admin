@@ -2,8 +2,8 @@ import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
 
 import authClient from "~/lib/utils/auth-client";
 
-import { Button } from "~/lib/components/ui/button";
-import ThemeToggle from "~/lib/components/layout/ThemeToggle";
+import { Button } from "~/components/ui/button";
+import ThemeToggle from "~/components/layout/ThemeToggle";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -15,10 +15,9 @@ export const Route = createFileRoute("/")({
 function Home() {
   const router = useRouter();
   const { user } = Route.useLoaderData();
-  const { queryClient } = Route.useRouteContext();
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div id="wave" className="flex flex-col gap-4 p-6">
       <h1 className="text-4xl font-bold">TanStarter</h1>
       <div className="flex items-center gap-2">
         This is an unprotected page:
@@ -30,9 +29,13 @@ function Home() {
       {user ? (
         <div className="flex flex-col gap-2">
           <p>Welcome back, {user.name}!</p>
+
           <Button type="button" asChild className="w-fit" size="lg">
-            <Link to="/dashboard">Go to Dashboard</Link>
+            <Link to="/dashboard" reloadDocument>
+              Go to Dashboard
+            </Link>
           </Button>
+
           <div>
             More data:
             <pre>{JSON.stringify(user, null, 2)}</pre>
@@ -41,7 +44,6 @@ function Home() {
           <Button
             onClick={async () => {
               await authClient.signOut();
-              await queryClient.invalidateQueries({ queryKey: ["user"] });
               await router.invalidate();
             }}
             type="button"
@@ -55,6 +57,7 @@ function Home() {
       ) : (
         <div className="flex flex-col gap-2">
           <p>You are not signed in.</p>
+          
           <Button type="button" asChild className="w-fit" size="lg">
             <Link to="/signin">Sign in</Link>
           </Button>

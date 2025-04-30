@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DataTable } from "~/lib/components/table/DataTable";
+import { DataTable } from "~/components/table/DataTable";
 import { organizationMembersColumns } from "~/lib/constants/organizations";
 
 export const Route = createFileRoute("/dashboard/(organization)/members/")({
   component: RouteComponent,
   loader: async ({ context }) => {
-    return { organization: context.activeOrganization };
+    return {
+      organization: context.user?.activeOrganization,
+    };
   },
 });
 
@@ -34,7 +36,7 @@ function RouteComponent() {
 
       <DataTable
         search={true}
-        columns={organizationMembersColumns(organization)}
+        columns={organizationMembersColumns}
         data={organization?.members ?? []}
       />
     </div>

@@ -20,6 +20,17 @@ export const auth = betterAuth({
         maximumTeams: 10, // Optional: limit teams per organization
         allowRemovingAllTeams: false, // Optional: prevent removing the last team
       },
+      async sendInvitationEmail(data) {
+        const inviteLink = `http://localhost:3000/accept-invitation?invitationId=${data.id}`;
+
+        console.log({
+          email: data.email,
+          invitedByUsername: data.inviter.user.name,
+          invitedByEmail: data.inviter.user.email,
+          teamName: data.organization.name,
+          inviteLink,
+        });
+      },
     }),
   ],
 
@@ -78,19 +89,3 @@ export const auth = betterAuth({
 
 export type Session = typeof auth.$Infer.Session;
 export type User = Session["user"];
-
-export type Organization = typeof auth.$Infer.Organization;
-export type OrganizationTeam = (typeof auth.$Infer.Organization)["team"];
-export type OrganizationMember = {
-  id: string;
-  organizationId: string;
-  createdAt: Date;
-  role: "member" | "admin" | "owner";
-  teamId?: string | undefined;
-  userId: string;
-  user: {
-    email: string;
-    name: string;
-    image?: string | undefined;
-  };
-};

@@ -4,9 +4,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { fetchUsers } from "~/server/admin";
 
 import { columns, filters } from "~/lib/constants/users";
-import { DataTable } from "~/lib/components/table/DataTable";
+import { DataTable } from "~/components/table/DataTable";
 
-import AddUserDialog from "~/lib/components/AddUserDialog";
+import AddUserDialog from "~/components/AddUserDialog";
 
 export const Route = createFileRoute("/dashboard/(administration)/users/")({
   component: RouteComponent,

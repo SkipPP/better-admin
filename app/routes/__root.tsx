@@ -21,13 +21,9 @@ export const Route = createRootRouteWithContext<{
 }>()({
   component: RootComponent,
   beforeLoad: async () => {
-    const { user, organizations, activeOrganization } = await getUserWithOrganizations();
+    const user = await getUserWithOrganizations();
 
-    return {
-      user,
-      organizations,
-      activeOrganization,
-    };
+    return { user };
   },
   head: () => ({
     meta: [
@@ -39,9 +35,9 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "rebass",
+        title: "rebass | just better.",
       },
-      { name: "description", content: "mh ok" },
+      { name: "description", content: "rebass - project management tool" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),

@@ -1,12 +1,10 @@
 import { z } from "zod";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { listUserOrganizations } from "~/server/organizations";
-
 import { columns } from "~/lib/constants/organizations";
-import { DataTable } from "~/lib/components/table/DataTable";
+import { DataTable } from "~/components/table/DataTable";
 
-import AddOrganizationDialog from "~/lib/components/AddOrganizationDialog";
+import AddOrganizationDialog from "~/components/organizations/AddOrganizationDialog";
 
 export const Route = createFileRoute("/dashboard/(administration)/organizations/")({
   component: RouteComponent,
@@ -18,12 +16,8 @@ export const Route = createFileRoute("/dashboard/(administration)/organizations/
     limit: search.limit,
     currentPage: search.currentPage,
   }),
-  loader: async ({ deps }) => {
-    const { organizations } = await listUserOrganizations({
-      data: { limit: deps.limit ?? 10, currentPage: deps.currentPage ?? 0 },
-    });
-
-    return { organizations };
+  loader: async ({ context }) => {
+    return { organizations: context.user?.organizations };
   },
 });
 
@@ -44,7 +38,7 @@ function RouteComponent() {
         <AddOrganizationDialog />
       </div>
 
-      <DataTable data={organizations} columns={columns} />
+      <DataTable data={organizations ?? []} columns={columns} />
     </div>
   );
 }

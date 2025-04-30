@@ -31,6 +31,7 @@ export const memberSchema = z.object({
   userId: z.string().min(1, "L'identifiant de l'utilisateur est requis"),
   role: z.enum(["member", "admin", "owner"]),
   teamId: z.string().optional(),
+  email: z.string().email("L'email est invalide").optional(),
 });
 
 export const updateOrganizationMemberRoleSchema = z.object({
